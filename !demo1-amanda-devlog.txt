@@ -1,0 +1,56 @@
+Where to find the new stuff in the Game Maker environment:
+	The new items are in the "Objects" folder. 
+	Their sprites are under "Sprites/item_sprites/health_restore_sprites".
+
+	The enforce_world_object_spawner has new item spawn events (press F5 and press F6, plus a single line of code in the Create event) for testing/demo purposes.
+
+******
+
+**APRIL 18, 2020:**
+
+Recolors:
+	Recolored the following sprites for P2: p_2_bod_walk_left/rite, p_2_bod_idle_left/rite, p_2_bod_sprint_left/rite
+
+New sprites:
+	Created health_pickup's sprite, called "health". It's 10x10 pixels, a simple "medkit" sort of thing with a bit of shading to give it depth.
+	
+	Created health_pickup_max's sprite. It's identical to health_pickup's, but with a blue tint and a gold cross.
+
+	Created hurtbox_test's sprite. It's identical to health_pickup's, but with a purple cross.
+
+New things:
+	Created health_pickup object and all of its events. Upon contact with the player, it heals them for 50 HP, then despawns. Its parent is enforce_item_gravity_parent, and it is flagged as solid and visible.
+	
+	Created health_pickup_max object and all of its events. It's identical to the regular health_pickup, but heals 100 instead of 50.
+
+	Created hurtbox_tester object and all of its events. It hurts the player for 50 HP. It is intended for testing only, to show that the healing items work.
+
+Changes to existing objects:
+		Added "item_spawn_count" variable defintion to the very bottom of the script in the Create event in enforce_world_object_spawner. 
+	
+	Added an event to enforce_world_object_spawner that spawns assorted items when you hit F5. It uses a switch-case that spawns different items depending on the value of item_spawn_count.
+
+**APRIL 21, 2020:**
+
+Changes to existing objects:
+	Changed health_pickup_max's sprite so that the cross is more visible.
+
+	Added an over-heal check to both the health items. If the player's health is less than max (100), they will be healed - if healing pushes them over their max, their health will be set to max. If they are already at full health, the game plays a sound effect.
+
+	Added a sound effect to the hurtbox_test - plays a sound upon pickup for the sake of feedback.
+
+**APRIL 22, 2020:**
+
+Changes to existing objects:
+	Made some changes to the item spawn button press events. Pressing F5 only spawns health items, while pressing F6 spawns hurtboxes. Also, items now spawn at fixed locations to the left of the player's starting point.
+
+	Changed the health_pickup_max healing to 75 points instead of 100.
+
+******
+
+Notes:
+	Need to make item collisions for players 2-4.
+
+	Need to finish more sprites.
+
+	Items mysteriously despawn after sitting around for a while - this is a bug, not sure why it happens.
