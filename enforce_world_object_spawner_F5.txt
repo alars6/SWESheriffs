@@ -1,0 +1,16 @@
+///Spawn items (TESTING)
+
+switch (item_spawn_count)
+{
+case 0: //If item_spawn_count = 0
+    item_spawn_count = 1; //Set item_spawn_count to next number
+    instance_create(575,50,health_pickup); //Spawn a health_pickup
+break;
+case 1: //If item_spawn_count = 1
+    item_spawn_count = 2; //Set item_spawn_count to next number
+    instance_create(575,50,health_pickup_max); //Spawn a health_pickup
+break;
+
+default: //If item_spawn_count doesn't match the cases above
+    item_spawn_count = 0; //Reset the counter
+}

@@ -1,0 +1,15 @@
+//Collision event with either enforcer_p1_body or enforcer_p1_arm 
+//Identical for both events
+if (global.enforcer_p1_hp < 100) //Check if enforcer's hp is below max
+    {
+        global.enforcer_p1_hp = global.enforcer_p1_hp + 50; //Heal
+
+        if (global.enforcer_p1_hp > 100) //Reset enforcer's hp if over max
+        {
+             global.enforcer_p1_hp = 100;
+        }
+    }
+    else
+    {
+        sound_play (menu_select_sfx_1); //Play sound if health at max
+    }
