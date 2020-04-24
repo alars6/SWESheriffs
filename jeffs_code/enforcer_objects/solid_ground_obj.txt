@@ -1,0 +1,22 @@
+Information about object: solid_ground_obj
+
+Sprite: solid_ground_sprite
+Solid: true
+Visible: false
+Depth: 0
+Persistent: false
+Parent: enforce_solid_object_parent
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+if (x < room_width)//To prevent spawning outside
+    instance_create(x+300,y+0,solid_ground_obj);
+
+
+Other Event: Outside Room:
+execute code:
+
+instance_destroy();
+
