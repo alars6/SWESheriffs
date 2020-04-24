@@ -1,3 +1,5 @@
+/////////PLEASE NOTE THAT ALLISON HELPED WITH THE BANK OBJ
+
 Information about object: enforce_world_bank_obj
 
 Sprite: bank_sprite
