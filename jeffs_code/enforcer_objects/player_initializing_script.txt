@@ -1,0 +1,109 @@
+/////////////////////////////
+//Recieve specific values to populate a specifc player's vars
+passed_player_id = argument0;
+passed_player_num= argument1;
+/////////////////////////////
+///
+
+if (passed_player_num == 1)
+{
+    global.enforcer_p1_has_hat          = true; //Do you have one on your head?
+    global.enforcer_p1_which_hat        = 1;    //Decider for current player's hat
+    global.enforcer_p1_weapon_1         = true; //Weapon 1 Carry
+    global.enforcer_p1_weapon_2         = false;//Weapon 2 Carry
+    global.enforcer_p1_which_weapon_1   = (irandom_range(1,5));    //Decider for Weapon 1
+    global.enforcer_p1_which_weapon_2   = 0;    //Decider for Weapon 2
+    global.enforcer_p1_current_weapon   = 1;    // 1 or 2
+    global.enforcer_p1_hp               = 100;
+    global.enforcer_p1_hurt_hp          = 100;  //Sub HP to show # of damage in succession.
+    global.enforcer_p1_is_riding        = false;//Is the player riding horse, wagon, etc
+    global.enforcer_p1_is_dead          = false;
+    global.enforcer_p1_hip_firing       = false;
+    global.enforcer_p1_aim_firing       = false;
+    global.enforcer_p1_is_reloading     = false;
+    global.enforcer_p1_is_dodging       = false;
+    global.enforcer_p1_dodging_to       = '';   //Accepts left or rite
+    global.enforcer_p1_is_in_action     = false;//Anything really, like reviving,picking up, etc
+    global.enforcer_p1_ammo_dropping    = false;
+    global.enforcer_p1_which_ammo_drop  = 0;    //See enforcer ammos
+    global.enforcer_p1_is_crouching     = false;
+    global.enforcer_p1_is_sprinting     = false;
+    global.enforcer_p1_weapon_switching = false;
+    global.enforcer_p1_face_side        = 'left';   //Accepts left or rite
+    global.enforcer_p1_is_speaking      = false;
+    global.enforcer_p1_voice_pack       = 0;
+    global.enforcer_p1_speaking_line    = false;
+    global.enforcer_p1_in_second_chance = false;//https://www.youtube.com/watch?v=v02rK0QvbLk
+    global.enforcer_p1_fully_dead       = false;//Turn true after death after 2nd chance
+    ////////////////////////////////////////////////////////
+    ////Initialize the ammo amount for weapon spawn (Remember, these are rusty weapons to start!
+    if (global.enforcer_p1_which_weapon_1 == 1)
+        {global.enforcer_p1_ammo_1          = 30;   //Revolver Ammo
+         global.enforcer_p1_weapon_1_clip   = 5;}    //5 revolver capacity
+    if (global.enforcer_p1_which_weapon_1 == 2)
+        {global.enforcer_p1_ammo_2          = 30;   //Pistol Ammo
+         global.enforcer_p1_weapon_1_clip   = 5;}    //5 pistol capacity
+    if (global.enforcer_p1_which_weapon_1 == 3)
+        {global.enforcer_p1_ammo_3          = 24;   //Repeater Ammo
+         global.enforcer_p1_weapon_1_clip   = 4;}    //4 repeater capacity
+    if (global.enforcer_p1_which_weapon_1 == 4) 
+        {global.enforcer_p1_ammo_4          = 20;   //Rifle Ammo
+         global.enforcer_p1_weapon_1_clip   = 1;}    //1 rifle capacity
+    if (global.enforcer_p1_which_weapon_1 == 5)
+        {global.enforcer_p1_ammo_5          = 15;   //Shotgun Ammo  
+         global.enforcer_p1_weapon_1_clip   = 1;}    //1 shotgun capacity
+    //////////////////////////////////////////////////////
+    //////Initilaze the player's body sprites
+    passed_player_id.enforcer_p1_body_idle_left_sprite          = p_1_bod_idle_left;
+    passed_player_id.enforcer_p1_body_idle_rite_sprite          = p_1_bod_idle_rite;
+    passed_player_id.enforcer_p1_body_move_left_sprite          = p_1_bod_walk_left;
+    passed_player_id.enforcer_p1_body_move_rite_sprite          = p_1_bod_walk_rite;
+    passed_player_id.enforcer_p1_body_crouch_idle_left_sprite   = p_1_bod_crouch_idle_left;
+    passed_player_id.enforcer_p1_body_crouch_idle_rite_sprite   = p_1_bod_crouch_idle_rite;
+    passed_player_id.enforcer_p1_body_sprint_left_sprite        = p_1_bod_sprint_left;
+    passed_player_id.enforcer_p1_body_sprint_rite_sprite        = p_1_bod_sprint_rite;
+    passed_player_id.enforcer_p1_body_jump_left_sprite          = p_1_bod_jump_left;
+    passed_player_id.enforcer_p1_body_jump_rite_sprite          = p_1_bod_jump_rite;
+    passed_player_id.enforcer_p1_back_dive_dodge_left_sprite_1  = p_1_bod_backwards_dive_dodge_left_1;
+    passed_player_id.enforcer_p1_back_dive_dodge_left_sprite_2  = p_1_bod_backwards_dive_dodge_left_2;
+    passed_player_id.enforcer_p1_back_dive_dodge_left_sprite_3  = p_1_bod_backwards_dive_dodge_left_3;
+    passed_player_id.enforcer_p1_back_dive_dodge_rite_sprite_1  = p_1_bod_backwards_dive_dodge_rite_1;
+    passed_player_id.enforcer_p1_back_dive_dodge_rite_sprite_2  = p_1_bod_backwards_dive_dodge_rite_2;
+    passed_player_id.enforcer_p1_back_dive_dodge_rite_sprite_3  = p_1_bod_backwards_dive_dodge_rite_3;
+    passed_player_id.enforcer_p1_forw_dive_dodge_left_sprite_1  = p_1_bod_forwards_dive_dodge_left_1;
+    passed_player_id.enforcer_p1_forw_dive_dodge_left_sprite_2  = p_1_bod_forwards_dive_dodge_left_2;
+    passed_player_id.enforcer_p1_forw_dive_dodge_rite_sprite_1  = p_1_bod_forwards_dive_dodge_rite_1;
+    passed_player_id.enforcer_p1_forw_dive_dodge_rite_sprite_2  = p_1_bod_forwards_dive_dodge_rite_2;
+    passed_player_id.enforcer_p1_pickup_left_sprite             = p_1_bod_pickup_left;
+    passed_player_id.enforcer_p1_pickup_rite_sprite             = p_1_bod_pickup_rite;
+    ///////////////////////////////////////////////////////
+    passed_player_id.enforcer_p1_stand_mask              = player_stand_mask_sprite;
+    passed_player_id.enforcer_p1_crouch_mask             = player_crouch_mask_sprite;
+    passed_player_id.enforcer_p1_mid_dive_dodge_mask     = player_mid_dive_dodge_mask_sprite;
+    passed_player_id.enforcer_p1_end_dive_dodge_mask     = player_end_dive_dodge_mask_sprite;  
+    /////////////////////////
+    ///Spawn the player's hat now
+    if (global.enforcer_p1_has_hat == true)
+        {   
+            if (global.enforcer_p1_which_hat == 1)
+                {
+                   hat_wear = instance_create(enforcer_p1_body_obj.x,(enforcer_p1_body_obj.y+-5),hat_1_obj);
+                   hat_wear.hat_belongs_to = (enforcer_p1_body_obj);
+                   hat_wear.hat_which      = 1; //It's the yellow cowboy hat
+                   hat_wear.hat_wearing    = true;
+                }
+            if (global.enforcer_p1_which_hat == 2)
+                {
+                   hat_wear = instance_create(enforcer_p1_body_obj.x,(enforcer_p1_body_obj.y+-5),hat_2_obj);
+                   hat_wear.hat_belongs_to = (enforcer_p1_body_obj);
+                   hat_wear.hat_which      = 2; //It's the poor man hat 1 
+                   hat_wear.hat_wearing    = true;
+                }
+        }
+    /////////////////////////////////////////////////////////////////////////////
+    //Now that everything's initialized for P1, 'start' the player
+    passed_player_id.enforcer_p1_ready = true;
+    exit;
+}//END P1 INITIALIZE
+/////////////////////////////////////////////////////////////////////////////////
+
