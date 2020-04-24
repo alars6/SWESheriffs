@@ -1,0 +1,13 @@
+//Time to load all the music into memory.
+
+//Proceed only if the folder exists
+if directory_exists("music\")
+    {
+        //sound_play(test_sound_1); Testing
+        if (file_exists("music\menu_music.wav"))
+            //see link below for sound_add function)
+            //https://docs.yoyogames.com/source/dadiospice/002_reference/game%20assets/sounds/legacy%20sound/sound_add.html
+            {global.menu_music = sound_add("music\menu_music.wav",0,false);
+            //sound_play(test_sound_1);
+            }
+    }
