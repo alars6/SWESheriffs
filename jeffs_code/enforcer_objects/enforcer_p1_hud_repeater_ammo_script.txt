@@ -1,0 +1,146 @@
+////////////////////////////////TEMP VAR FROM GLOBAL
+enforcer_p1_ammo_3_temp = global.enforcer_p1_ammo_3;
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////SPECIAL CASES FOR DRAWING HUD NUMBERS
+if (enforcer_p1_ammo_3_temp < 100)
+    {draw_sprite(enforce_hud_number_sprite,0,view_xview[0]+142,view_yview[0]+149);}
+if (enforcer_p1_ammo_3_temp < 010)
+    {draw_sprite(enforce_hud_number_sprite,0,view_xview[0]+149,view_yview[0]+149);}
+//Reason for those 2 cases here is because it'll override the checked 'digit' displayed.
+///////////////////////////////////////////////////
+//Now to check "X"XX digit and draw correct # 
+if (enforcer_p1_ammo_3_temp > 899)
+    {
+        draw_sprite(enforce_hud_number_sprite,9,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -900; 
+    }
+if (enforcer_p1_ammo_3_temp > 799)
+    {
+        draw_sprite(enforce_hud_number_sprite,8,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -800; 
+    }
+if (enforcer_p1_ammo_3_temp > 699)
+    {
+        draw_sprite(enforce_hud_number_sprite,7,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -700; 
+    }
+if (enforcer_p1_ammo_3_temp > 599)
+    {
+        draw_sprite(enforce_hud_number_sprite,6,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -600; 
+    }
+if (enforcer_p1_ammo_3_temp > 499)
+    {
+        draw_sprite(enforce_hud_number_sprite,5,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -500; 
+    }
+if (enforcer_p1_ammo_3_temp > 399)
+    {
+        draw_sprite(enforce_hud_number_sprite,4,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -400; 
+    }
+if (enforcer_p1_ammo_3_temp > 299)
+    {
+        draw_sprite(enforce_hud_number_sprite,3,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -300; 
+    }
+if (enforcer_p1_ammo_3_temp > 199)
+    {
+        draw_sprite(enforce_hud_number_sprite,2,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -200; 
+    }
+if (enforcer_p1_ammo_3_temp > 099)
+    {
+        draw_sprite(enforce_hud_number_sprite,1,view_xview[0]+142,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -100; 
+    }
+///////////////////////////////////////////////////////////////////////////////////
+//Now to check X"X"X digit and draw correct #
+if (enforcer_p1_ammo_3_temp > 089)
+    {
+        draw_sprite(enforce_hud_number_sprite,9,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -090;
+    }
+if (enforcer_p1_ammo_3_temp > 079)
+    {
+        draw_sprite(enforce_hud_number_sprite,8,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -080;
+    }
+if (enforcer_p1_ammo_3_temp > 069)
+    {
+        draw_sprite(enforce_hud_number_sprite,7,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -070;
+    }
+if (enforcer_p1_ammo_3_temp > 059)
+    {
+        draw_sprite(enforce_hud_number_sprite,6,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -060;
+    }
+if (enforcer_p1_ammo_3_temp > 049)
+    {
+        draw_sprite(enforce_hud_number_sprite,5,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -050;
+    }
+if (enforcer_p1_ammo_3_temp > 039)
+    {
+        draw_sprite(enforce_hud_number_sprite,4,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -040;
+    }
+if (enforcer_p1_ammo_3_temp > 029)
+    {
+        draw_sprite(enforce_hud_number_sprite,3,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -030;
+    }
+if (enforcer_p1_ammo_3_temp > 019)
+    {
+        draw_sprite(enforce_hud_number_sprite,2,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -020;
+    }
+if (enforcer_p1_ammo_3_temp > 009)
+    {
+        draw_sprite(enforce_hud_number_sprite,1,view_xview[0]+149,view_yview[0]+149);
+        enforcer_p1_ammo_3_temp += -010;
+    }
+///////////////////////////////////////////////////////////////////////////////////
+//Now to check XX"X" digit and draw correct #
+if (enforcer_p1_ammo_3_temp == 009)
+    {
+        draw_sprite(enforce_hud_number_sprite,9,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 008)
+    {
+        draw_sprite(enforce_hud_number_sprite,8,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 007)
+    {
+        draw_sprite(enforce_hud_number_sprite,7,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 006)
+    {
+        draw_sprite(enforce_hud_number_sprite,6,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 005)
+    {
+        draw_sprite(enforce_hud_number_sprite,5,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 004)
+    {
+        draw_sprite(enforce_hud_number_sprite,4,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 003)
+    {
+        draw_sprite(enforce_hud_number_sprite,3,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 002)
+    {
+        draw_sprite(enforce_hud_number_sprite,2,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 001)
+    {
+        draw_sprite(enforce_hud_number_sprite,1,view_xview[0]+156,view_yview[0]+149);
+    }
+if (enforcer_p1_ammo_3_temp == 000)
+    {
+        draw_sprite(enforce_hud_number_sprite,0,view_xview[0]+156,view_yview[0]+149);
+    }
