@@ -1,0 +1,79 @@
+Information about object: menu_black_screen_obj
+
+Sprite: menu_black_screen_sprite
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: <no parent>
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+//Setting up the alarm for the first boot sprite to appear
+alarm[0]    = 1;        // 1 frame after it is created
+which_step  = 0;        // To control which step to 'boot show'.
+image_alpha = 0;
+
+
+Alarm Event for alarm 0:
+execute code:
+
+//Fade in
+if (which_step == 0)
+    {
+        //sound_play(test_sound_1); This is just to see if the following code actually works
+        //sprite_index = proto_boot_splash_sprite_1;  //First boot gfx
+        image_index = 0;
+        image_speed = 0;
+        image_alpha = 0;                            //Starts off completely black
+        //image_blend = c_black;
+        which_step = 1;
+        //image_alpha_step = 1;                       //Local var used here
+    }
+    //Now start slowly removing the alpha in 30 frames
+    if(which_step ==1)
+        {
+            //sound_play(test_sound_1); This is just to see if the following code actually works
+            alarm[0]=1;
+            //image_alpha_step = (image_alpha_step - 0.017);
+            image_alpha += 0.033;
+                //Exit condition for step 1
+                if(image_alpha > 1)
+                {
+                    image_alpha = 1;
+                    which_step = 2;
+                }
+        } //End fade in
+//Stay faded in for about 2 seconds.
+if (which_step == 2)
+    {
+        image_alpha = 1;
+        alarm[0] = 60; 
+        which_step = 3;
+        exit; //To avoid fading out prematurely.
+    }//End stay onscreen
+//Fade out
+if (which_step == 3)
+    {
+        alarm[0]=1;
+        //image_alpha_step = (image_alpha_step + 0.017);
+        image_alpha -= 0.033;
+        //sound_play(test_sound_1); This is just to see if the following code actually works
+        //Exit condition for step 3
+            if(image_alpha < 0)
+                {
+                    image_alpha = 0;
+                    which_step = 4;
+                    alarm[0] = 60;
+                    exit; // to avoid ending prematurely 
+                }
+    } //End fade out
+//REMOVE ITSELF
+if (which_step == 4){instance_destroy();}
+////////////////////////////////////////////////////////////////////////
+    
+
+    
+
