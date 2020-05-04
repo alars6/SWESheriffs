@@ -1,0 +1,4 @@
+///Alt Spawn items (TESTING)
+//Currently just spawns a hurtbox,
+// a testing item which deals damage so you can test health pickups
+instance_create(600,50,hurtbox_test);    }

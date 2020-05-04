@@ -1,0 +1,55 @@
+Information about object: enforce_p1_hud_obj
+
+Sprite: <no sprite>
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: <no parent>
+Mask: <same as sprite>
+
+Draw Event:
+execute code:
+
+///////////////////////////////////////////////////////////////////////////////////////
+//DRAW THE P1's MAIN HUD SPRITE
+draw_sprite(enforce_p1_main_hud_sprite,-1,view_xview[0]+0,view_yview[0]+0);
+//DRAW THE P1's 'HURT' HP BAR first since it's always behind the actual HP
+draw_healthbar(view_xview[0]+15,view_yview[0]+5,view_xview[0]+295,view_yview[0]+10,global.enforcer_p1_hurt_hp,c_black,c_yellow,c_yellow,1,false,false);
+//THEN, DRAW THE P1'S HP BAR, which will be always  
+draw_healthbar(view_xview[0]+15,view_yview[0]+5,view_xview[0]+295,view_yview[0]+10,global.enforcer_p1_hp,c_black,c_red,c_red,1,false,false);
+///////////////////////////////////////////////////////////////////////////////////////
+/////////DRAW THE P1'S 1ST WEAPON, WHICH IS ON THE RIGHT SIDE
+//if it doesn't exist...
+if(global.enforcer_p1_weapon_1 == false){draw_sprite(empty_weapon_name_sprite,-1,view_xview[0]+153,view_yview[0]+105);}
+//If it does exists
+if(global.enforcer_p1_weapon_1 == true){enforcer_p1_hud_weapon_name_script(1);}
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+/////////DRAW THE P1'S 2ND WEAPON, WHICH IS ON THE LEFT SIDE
+//if it doesn't exist...
+if(global.enforcer_p1_weapon_2 == false){draw_sprite(empty_weapon_name_sprite,-1,view_xview[0]+5,view_yview[0]+105);}
+//if it does exists
+if(global.enforcer_p1_weapon_2 == true){enforcer_p1_hud_weapon_name_script(2);}
+///DRAW THE BANK'S MONEY (DELETE AFTER TESTING)
+draw_text(view_xview[0] + 40, view_yview[0] + 40, global.bank_money);
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+//////DRAW THE PLAYER'S 'MAG' FOR CURRENT WEAPON SELECTED
+///////////////////////////////////////////////////////////////////////////////////////
+//enforcer_p1_hud_mag_draw_script((enforcer_p1_arm_obj.enforcer_p1_weapon_1_clip),(enforcer_p1_arm_obj.enforcer_p1_weapon_2_clip));
+enforcer_p1_hud_mag_draw_script();
+///////////////////////////////////////////////////////////////////////////////////////
+//////DRAW THE PLAYER'S AMMO COUNTS IN NUMBERS IN THE PLAYER'S HUD/////////////////////
+//FOR REVOLVER AMMO ON HUD
+enforcer_p1_hud_revolver_ammo_script();
+//FOR PISTOL AMMO ON HUD
+enforcer_p1_hud_pistol_ammo_script();
+//FOR REPEATER AMMO ON HUD
+enforcer_p1_hud_repeater_ammo_script();
+//FOR RIFLE AMMO ON HUD
+enforcer_p1_hud_rifle_ammo_script();
+//FOR SHOTGUN AMMO ON HUD
+enforcer_p1_hud_shotgun_ammo_script();
+///////////////////////////////////////////////////////////////////////////////////////
+
