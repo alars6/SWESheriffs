@@ -1,0 +1,310 @@
+Information about object: enforcer_p1_body_obj
+
+Sprite: <no sprite>
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: <no parent>
+Mask: player_stand_mask_sprite
+
+Create Event:
+execute code:
+
+/*
+///Temp vars have to be declared first before populating them w/ script.
+enforcer_p1_has_hat          = false; //Do you have one on your head?
+enforcer_p1_which_hat        = 0;    //Decider for current player's hat
+enforcer_p1_weapon_1         = true; //Weapon 1 Carry
+enforcer_p1_weapon_2         = false;//Weapon 2 Carry
+enforcer_p1_which_weapon_1   = 0;    //Decider for Weapon 1
+enforcer_p1_which_weapon_2   = 0;    //Decider for Weapon 2
+enforcer_p1_hp               = 100;
+enforcer_p1_hurt_hp          = 100;  //Sub HP to show # of damage in succession.
+enforcer_p1_is_riding        = false;//Is the player riding horse, wagon, etc
+enforcer_p1_is_dead          = false;
+enforcer_p1_hip_firing       = false;
+enforcer_p1_aim_firing       = false;
+enforcer_p1_is_reloading     = false;
+enforcer_p1_is_dodging       = false;
+enforcer_p1_dodging_to       = '';   //Accepts left or rite
+enforcer_p1_is_in_action     = false;//Anything really, like reviving,picking up, etc
+enforcer_p1_ammo_dropping    = false;
+enforcer_p1_which_ammo_drop  = 0;    //See enforcer ammos
+enforcer_p1_is_crouching     = false;
+enforcer_p1_is_sprinting     = false;
+enforcer_p1_weapon_switching = false;
+enforcer_p1_face_side        = '';   //Accepts left or rite
+enforcer_p1_is_speaking      = false;
+enforcer_p1_voice_pack       = 0;
+enforcer_p1_speaking_line    = false;
+enforcer_p1_in_second_chance = false;//https://www.youtube.com/watch?v=v02rK0QvbLk
+enforcer_p1_fully_dead       = false;//Turn true after death after 2nd chance
+*/
+/////
+enforcer_p1_ready                          = false;     ///This is for 
+///////////////////////////////////////
+//Now for the Player's sprites "Pack"
+enforcer_p1_body_idle_left_sprite          = '';
+enforcer_p1_body_idle_rite_sprite          = '';
+enforcer_p1_body_move_left_sprite          = '';
+enforcer_p1_body_move_rite_sprite          = '';
+enforcer_p1_body_crouch_idle_left_sprite   = '';
+enforcer_p1_body_crouch_idle_rite_sprite   = '';
+enforcer_p1_body_sprint_left_sprite        = '';
+enforcer_p1_body_sprint_rite_sprite        = '';
+enforcer_p1_body_jump_left_sprite          = '';
+enforcer_p1_body_jump_rite_sprite          = '';
+enforcer_p1_back_dive_dodge_left_sprite_1  = '';
+enforcer_p1_back_dive_dodge_left_sprite_2  = '';
+enforcer_p1_back_dive_dodge_left_sprite_3  = '';
+enforcer_p1_back_dive_dodge_rite_sprite_1  = '';
+enforcer_p1_back_dive_dodge_rite_sprite_2  = '';
+enforcer_p1_back_dive_dodge_rite_sprite_3  = '';
+enforcer_p1_forw_dive_dodge_left_sprite_1  = '';
+enforcer_p1_forw_dive_dodge_left_sprite_2  = '';
+enforcer_p1_forw_dive_dodge_rite_sprite_1  = '';
+enforcer_p1_forw_dive_dodge_rite_sprite_2  = '';
+enforcer_p1_pickup_left_sprite             = '';
+enforcer_p1_pickup_rite_sprite             = '';
+//////////////////////////////////////
+//Now for player's special vars that help animate sprites correctly since we're using Draw event
+enforcer_p1_sprite_animated                = false; ///THIS decides if animating the player!
+enforcer_p1_current_sprite_max_frames      = 0;     ///This counts the number of frames per sprite & acts as a limiter
+enforcer_p1_current_sprite_index           = 0;     ///This traverses through the # of frames for sprites
+enforcer_p1_current_sprite_draw            = 0;     ///This will be used instead of sprite index
+//////////////////////////////////////
+//Now for player's mask sprites ----> This is meant for collisons w/ bullets, ground, solids objs, etc
+enforcer_p1_stand_mask              = '';
+enforcer_p1_crouch_mask             = '';
+enforcer_p1_mid_dive_dodge_mask     = '';
+enforcer_p1_end_dive_dodge_mask     = '';          
+//////////////////////////////////////
+////Starting when the P1 is spawned in the world
+player_initializing_script(id,1);       /// 1st is id num, and second is which player am I
+////Give the player the initial mask (meant for collisions)
+mask_index = enforcer_p1_stand_mask;
+///Create the player's arm now
+instance_create(x+0,y+0,enforcer_p1_arm_obj); 
+
+
+
+ Step Event:
+execute code:
+
+/////////////////////////////////
+
+//////////////////////////////////
+///THIS IS MEANT FOR GRAVITY
+if (place_free(x+0,y+1))
+    {gravity_direction = 270;gravity = 0.5;}
+else
+    {gravity_direction = 270; gravity = 0;}
+///////////////////////////////END GRAVITY DOWNWARDS
+
+////////////////////////////////////////////////
+////This is meant for animating the player when walking
+if (enforcer_p1_sprite_animated == true)
+    {
+        ///Animate player's sprite frame by frame manually
+        enforcer_p1_current_sprite_index += 0.17;
+        ///If current's sprite index var is larger than the sprite allows...
+        if (enforcer_p1_current_sprite_index > enforcer_p1_current_sprite_max_frames /* + 1*/)
+            {enforcer_p1_current_sprite_index = 0;}///Reset it back to 0 to restart the animation.
+    }
+/////////////////////////////////////////////////////
+
+
+
+
+
+Collision Event with object enforce_solid_object_parent:
+execute code:
+
+    move_contact_solid(direction,12);
+    vspeed = 0;
+/////////////////////////////////////////////////////
+/*///////////////////////////////////////*/
+////////When colliding with solid obj's on the sides
+
+if (place_free(x+0,y+1))
+    {
+        if !(hspeed == 0)
+            {
+                //hspeed = 0;
+            }
+    }
+if !(place_free(x+1,y+0))
+    {
+        if !(hspeed == 0)
+            {
+                //hspeed = 0;
+            }   
+    }
+/*/////////////////////////////////////////*/
+
+
+Keyboard Event for <Shift> Key:
+execute code:
+
+if (global.enforcer_p1_is_crouching == false) && (global.enforcer_p1_is_dead == false) && (global.enforcer_p1_is_dead == false) &&
+   (global.enforcer_p1_fully_dead == false)&& (global.enforcer_p1_is_dodging == false) && (global.enforcer_p1_is_in_action == false)&&
+   (global.enforcer_p1_is_sprinting == false) && (!(place_free(x+0,y+1)))//Make sure Player is on the ground
+    {
+        global.enforcer_p1_is_crouching = true;
+        hspeed = 0;
+    }
+///////////////////////////////////////////////
+
+if (global.enforcer_p1_is_crouching == true)
+    {
+        if (global.enforcer_p1_face_side == 'rite')
+            {
+                mask_index = player_crouch_mask_sprite;
+                if !(enforcer_p1_current_sprite_draw == enforcer_p1_body_crouch_idle_rite_sprite)
+                    {enforcer_p1_current_sprite_draw = enforcer_p1_body_crouch_idle_rite_sprite;}
+            }
+        if (global.enforcer_p1_face_side == 'left')
+            {
+                mask_index = player_crouch_mask_sprite;
+                if !(enforcer_p1_current_sprite_draw == enforcer_p1_body_crouch_idle_left_sprite)
+                    {enforcer_p1_current_sprite_draw = enforcer_p1_body_crouch_idle_left_sprite;}
+            }
+    }
+
+
+Keyboard Event for A-key Key:
+execute code:
+
+////revamp after testing!
+if (global.enforcer_p1_face_side == 'rite')
+    {
+        global.enforcer_p1_face_side = 'left';
+        ///vspeed = -1;
+    }
+//IF PLAYER IS NOT CROUCHING, DEAD, FULLY, DEAD, ETC
+if (global.enforcer_p1_face_side == 'left') && (global.enforcer_p1_is_crouching == false)
+    {
+        hspeed = -1.0;
+    }
+    
+
+
+Keyboard Event for D-key Key:
+execute code:
+
+////revamp after testing!
+if (global.enforcer_p1_face_side == 'left') 
+    {
+        global.enforcer_p1_face_side = 'rite';
+        ///hspeed = 1.0;
+    }
+//IF PLAYER IS NOT CROUCHING, DEAD, FULLY, DEAD, ETC
+if (global.enforcer_p1_face_side == 'rite') && (global.enforcer_p1_is_crouching == false)
+    {
+        hspeed = 1.0;
+    }
+//////////////////////////////////////////////////////
+
+
+Draw Event:
+execute code:
+
+////////////////////////////////////////////////////////////////////REMEMBER, DRAW EVENT ALSO ACTS AS A STEP EVENT
+////////ONCE SCRIPT IS DONE 'PREPPING' THE PLAYER, NOW IT'S TIME TO DRAW THE PLAYER'S SPRITES ACCORDINGLY
+
+////ALWAYS DRAW THE PLAYER ONSCREEN w/ current sprite
+draw_sprite(enforcer_p1_current_sprite_draw,enforcer_p1_current_sprite_index,x+0,y+0);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+///IF PLAYER'S NOT DEAD, SPRINTING, CROUCHING, FULLY DEAD
+if  (global.enforcer_p1_is_sprinting == false) && (global.enforcer_p1_is_crouching == false) && 
+    (global.enforcer_p1_is_dead == false) && (global.enforcer_p1_fully_dead == false)
+    {
+        ///////////////////////////
+        /// If player's moving left
+        if (hspeed < 0)
+            {
+                enforcer_p1_current_sprite_draw = enforcer_p1_body_move_left_sprite;
+                enforcer_p1_sprite_animated = true;
+                enforcer_p1_current_sprite_max_frames = sprite_get_number(enforcer_p1_body_move_left_sprite);
+                global.enforcer_p1_face_side = 'left';
+            }
+        ///////////////////////////
+        /// If player's moving rite
+        if (hspeed > 0)
+            {
+                enforcer_p1_current_sprite_draw = enforcer_p1_body_move_rite_sprite;
+                enforcer_p1_sprite_animated = true;
+                enforcer_p1_current_sprite_max_frames = sprite_get_number(enforcer_p1_body_move_rite_sprite);
+                global.enforcer_p1_face_side = 'rite';
+            }
+        ///////////////////////////
+        ///If player stops moving
+        if (hspeed == 0)
+            {
+                if (global.enforcer_p1_face_side == 'left') && (global.enforcer_p1_is_crouching == false)
+                    {enforcer_p1_current_sprite_draw = enforcer_p1_body_idle_left_sprite; enforcer_p1_sprite_animated = false;}
+                if (global.enforcer_p1_face_side == 'rite') && (global.enforcer_p1_is_crouching == false)
+                    {enforcer_p1_current_sprite_draw = enforcer_p1_body_idle_rite_sprite; enforcer_p1_sprite_animated = false;}
+            }
+    }
+////////////////////////////////////////////////////////////////////
+
+
+
+
+Key Press Event for M-key Key:
+execute code:
+
+/////////////////////////
+//This allows the player to jump if he's currently on ground and allowed....
+if !(place_free(x+0,y+1))
+    {
+        vspeed = -3.5;
+    }
+
+
+Key Release Event for <Shift> Key:
+execute code:
+
+///Uncrouch
+if (global.enforcer_p1_is_crouching == true)
+    {
+          mask_index = player_stand_mask_sprite;
+          global.enforcer_p1_is_crouching = false;
+          if (global.enforcer_p1_face_side == 'rite')
+            {
+                if !(enforcer_p1_current_sprite_draw == enforcer_p1_body_idle_rite_sprite)
+                {enforcer_p1_current_sprite_draw = enforcer_p1_body_idle_rite_sprite ;}
+            }
+          if (global.enforcer_p1_face_side == 'left')
+            {
+                if !(enforcer_p1_current_sprite_draw == enforcer_p1_body_idle_left_sprite)
+                {enforcer_p1_current_sprite_draw = enforcer_p1_body_idle_left_sprite ;}
+            
+            }
+    }
+
+
+Key Release Event for A-key Key:
+execute code:
+
+////revamp after testing!
+if (global.enforcer_p1_face_side == 'left')
+    {
+        //global.enforcer_p1_face_side = 'left';
+        hspeed = 0;
+    }
+
+
+Key Release Event for D-key Key:
+execute code:
+
+////revamp after testing!
+if (global.enforcer_p1_face_side == 'rite')
+    {
+        //global.enforcer_p1_face_side = 'rite';
+        hspeed = 0;
+    }
+

@@ -1,0 +1,81 @@
+Information about object: e_homeless_arm_obj
+
+Sprite: <no sprite>
+Solid: false
+Visible: true
+Depth: -1
+Persistent: false
+Parent: <no parent>
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+///////////////////////////////////
+e_bod_follow    = 0;    //Which enemy body am I following?
+e_arm_face      = 'left';//Accepts left or rite
+e_arm_ready     = false;
+/////////////////////////////////////////
+e_arm_idle_left     = '';
+e_arm_idle_rite     = '';
+e_arm_attack_rite   = '';
+e_arm_attack_left   = '';
+e_arm_reload_left   = '';
+e_arm_reload_rite   = '';
+e_arm_item_dropping = false;
+e_arm_drop_item     = 0;    //Will get changed to whatever
+e_arm_is_reloading  = false;
+e_arm_is_attacking = false;
+e_projectile        = 0;    //Will change to wathever the body script says
+e_projectile_x      = 0;
+e_projectile_y      = 0;
+e_use_gunsmoke      = false;
+e_gunsmoke_x        = 0;
+e_gunsmoke_y        = 0;
+e_arm_face          = 'left';
+
+
+
+
+
+ Step Event:
+execute code:
+
+if (e_arm_ready == true)
+    {
+        if (e_bod_follow != 0) && (e_bod_follow.e_hp > 0)
+            {
+                x = e_bod_follow.x;
+                y = e_bod_follow.y + 4;
+                ////////////////////////////////////// 
+                if(e_bod_follow.e_body_face == 'left')
+                    {e_arm_face = 'left';}
+                if(e_bod_follow.e_body_face == 'rite')
+                    {e_arm_face = 'rite';}
+                //////////////////////////////////////
+                if (e_arm_face == 'left')
+                    {
+                        if(e_arm_is_reloading == false) && (e_arm_is_attacking == false)
+                            {
+                                sprite_index = e_arm_idle_left;
+                            }
+                    }
+                if (e_arm_face == 'rite')
+                    {
+                        if(e_arm_is_reloading == false) && (e_arm_is_attacking == false)
+                            {
+                                sprite_index = e_arm_idle_rite;
+                            }
+                    }
+                ///////////////////////////////////////
+            }
+        
+        if (e_bod_follow.e_hp < 1)  //if e body is dead
+            {
+                if(e_arm_item_dropping == true) //Drop items 
+                    {}
+                    
+                instance_destroy();
+            }
+    }
+

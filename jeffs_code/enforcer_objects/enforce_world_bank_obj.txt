@@ -1,0 +1,27 @@
+/////////PLEASE NOTE THAT ALLISON HELPED WITH THE BANK OBJ
+
+Information about object: enforce_world_bank_obj
+
+Sprite: bank_sprite
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: enforce_scenery_object_parent
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+global.bank_money = 10000;
+global.enemies_killed = 0;
+
+
+ Step Event:
+execute code:
+
+if (global.bank_money <= 0)
+{ //game over event
+
+}
+

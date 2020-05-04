@@ -1,0 +1,17 @@
+Stuff that is done-ish: Allison Hardy
+
+Sprites for outlaw (including gore for death scene)
+
+Arm object (is not working properly)-I left it out of the spawning (enemy is basically defenseless at this point)
+
+Body object (is working) – can steal money (money is stolen once the enemy goes to the bank and then turns around and runs off screen) - player can prevent the money from being stolen if the enemy is killed/ I did program a kill event (There is a gore affect but it is on a loop so it looks a little strange)- keeping track of total enemies killed with global.enemies_killed (initialized in the bank object)/I did not get to programming in the drop item event…I have a start for it in the dead_obj enemy object though.
+
+The outlaws are really simplistic at this point in terms of behavior…also there is too many of them on the screen at a time…you can kill them but it is difficult and not very fun…they sap up all the money easily. I may tweak the flow and the max number of times that enemies are allowed to spawn onto the floor. Also as it is set up now the dead bodies just stack up and sit around…they do not disappear…I was going to deal with that in the drop item section of the dead_obj event but I got too tired to keep going.
+
+Bullets (objects/uni_gameplay_objects/damagers_objects)– Put step events in the bullets to check for collision and subtract hp from damaged outlaw enemies (I wonder though if that was already coded? It may have been? I did not test it before hand)
+
+spawner object (outlaw_spawner) – I spawned it using the enforcer world object spawner
+
+Bank object (has a create and step event) – now has a global variable called global.bank_money and there is a check to see if it is less than or equal to zero (no actual code written under the if statement yet)
+
+Hud object draws text showing the value of global.bank_money

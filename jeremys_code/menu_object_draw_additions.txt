@@ -1,0 +1,217 @@
+/////////////////////////////////////////////////////////////////////////
+//If selected GUNSAWIKI
+if (menu_display == 3)
+    {
+        if(menu_select < 100){
+            if !(background_index[0] == wiki_background) {background_index[0] = wiki_background;}
+        
+        
+            if(menu_select == 0){
+                draw_sprite(menu_gunsawiki_revolver_text_selected_sprite,0,20,180);
+            }
+            else if(menu_select == 1){
+                draw_sprite(menu_gunsawiki_pistol_text_selected_sprite,0,123,180);
+            }
+            else if(menu_select == 2){
+                draw_sprite(menu_gunsawiki_rifle_text_selected_sprite,0,215,180);
+            }
+            else if(menu_select == 3){
+                draw_sprite(menu_gunsawiki_shotgun_text_selected_sprite,0,20,240);
+            }
+            else if(menu_select == 4){
+                draw_sprite(menu_gunsawiki_repeater_text_selected_sprite,0,110,240);
+            }
+            else if(menu_select == 5){
+                draw_sprite(menu_back_wiki_selected_sprite,0,200,240);
+            }
+        
+            else if(menu_select >= 11 && menu_select <= 20 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Revolver",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 11){
+                    draw_text_color(25,50,"Rusty Revolver",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 21 && menu_select <= 30 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Pistol",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 21){
+                    draw_text_color(25,50,"Rusty Pistol",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 31 && menu_select <= 40 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Rifle",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 31){
+                    draw_text_color(25,50,"Rusty Rifle",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 41 && menu_select <= 50 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Shotty",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 41){
+                    draw_text_color(25,50,"Rusty Shotty",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 51 && menu_select <= 60 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Repeater",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 51){
+                    draw_text_color(25,50,"Rusty Repeater",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            draw_sprite(menu_gunsawiki_revolver_text_sprite,0,20,180);
+            draw_sprite(menu_gunsawiki_pistol_text_sprite,0,123,180);
+            draw_sprite(menu_gunsawiki_rfile_text_sprite,0,215,180);
+            draw_sprite(menu_gunsawiki_shotgun_text_sprite,0,20,240);
+            draw_sprite(menu_gunsawiki_repeater_text_sprite,0,110,240);
+            draw_sprite(menu_back_wiki_sprite,0,200,240);
+            /*
+            if(menu_select == 0){
+                draw_sprite(menu_gunsawiki_revolver_text_selected_sprite,0,20,180);
+            }
+            else if(menu_select == 1){
+                draw_sprite(menu_gunsawiki_pistol_text_selected_sprite,0,123,180);
+            }
+            else if(menu_select == 2){
+                draw_sprite(menu_gunsawiki_rifle_text_selected_sprite,0,215,180);
+            }
+            else if(menu_select == 3){
+                draw_sprite(menu_gunsawiki_shotgun_text_selected_sprite,0,20,240);
+            }
+            else if(menu_select == 4){
+                draw_sprite(menu_gunsawiki_repeater_text_selected_sprite,0,110,240);
+            }
+            else if(menu_select == 5){
+                draw_sprite(menu_back_wiki_selected_sprite,0,200,240);
+            */
+            
+        }else if(menu_select > 100){
+            if !(background_index[0] == generic_background) {background_index[0] = generic_background;}
+            
+            if(menu_select == 111){//revolver
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses :Revolver Rounds
+Holds:5 Bullets
+Base Damage: 20
+Max Crit Dmg: 40
+Base Reload Speed: 1.2sec/round
+Smash Reload Speed: 0.6sec/round
+Hip Weapon Stats:
+Hit Miss: 30%
+Fire Speed: ~.63sec.round
+Crit Chance: 40%
+Max Inaccuracy: +2/-2
+Aim Weapon Stats:
+Hit Miss: 15%\n
+Fire Speed: 1.25sec/round
+Crit Chance: 25%
+Max Inaccuracy: +1/-1\",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+            else if(menu_select == 121){//pistol
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Pistol Rounds
+Holds: 5 Bullets
+Base Damage: 15
+Max Crit Dmg: 30
+Base Reload Speed: 2.0sec/5round
+Smash Reload Speed: 1.3sec/5round
+Hip Weapon Stats||
+Hit Miss: 40%
+Fire Speed: 0.3sec/round
+Crit Chance: 30%
+Max Inaccuracy: +2.5/-2.5
+Aim Weapon Stats||
+Hit Miss: 25%
+Fire Speed: 0.6sec/round
+Crit Chance: 20%
+Max Inaccuracy: +1.5/-1.5",
+                        c_silver,c_silver,c_silver,c_silver,1);
+
+            }
+            else if(menu_select == 131){//rifle
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Rifle Rounds
+Holds: 1
+Base Damage: 50
+Max Crit Dmg: 100
+Base Reload Speed: 3sec/round
+Smash Reload Speed: 2sec/round
+Hip Weapon Stats||
+Hit Miss: 50%
+Fire Speed: 1 sec/round
+Crit Chance: 50%
+Max Inaccuracy: +3/-3
+Aim Weapon Stats||
+Hit Miss: 30%
+Fire Speed: 1 sec/round
+Crit Chance: 30%
+Max Inaccuracy: +1.75/-1.75",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+            else if(menu_select == 141){//shotty
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Shotgun Rounds
+Holds: 1
+Base Damage: 100 / 5
+Max Crit Dmg: 150 / 5
+Base Reload Speed: 4sec/round
+Smash Reload Speed: 3sec/round
+Hip Weapon Stats||
+Hit Miss: 20%/pellet
+Fire Speed: 1 sec/round
+Crit Chance: 20%/pellet  
+Max Inaccuracy: +2.25/-2.25
+Aim Weapon Stats||
+Hit Miss: 15%/pellet
+Fire Speed: 1 sec/round
+Crit Chance: 25%/pellet
+Max Inaccuracy: +1.75/-1.75",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+            else if(menu_select == 151){//repeater
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Repeater Rounds
+Holds: 4 Bullets
+Base Damage: 25
+Max Crit Dmg: 50
+Base Reload Speed: 1.2sec/round
+Smash Reload Speed: 0.6sec/round
+Hip Weapon Stats||
+Hit Miss: 35% 
+Fire Speed: ~1.2sec/round
+Crit Chance: 30%
+Max Inaccuracy: +2.0/-2.0
+Aim Weapon Stats||
+Hit Miss: 25%
+Fire Speed: ~2.0sec/round
+Crit Chance: 15%
+Max Inaccuracy: +1.5/-1.5",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+        }
+        
+        
+    
+    }
