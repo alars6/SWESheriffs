@@ -1,0 +1,42 @@
+Information about object: enforce_loader_obj
+
+Sprite: <no sprite>
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: <no parent>
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+///Initialize & check for all global & local vars for Enforcer Mode
+enforcer_mode_initialize_script();
+//////////////////////////////////////////////////////
+
+    ///If 4 players are playing
+    if (global.enforcer_player_4 == true)
+        {
+            transition_kind = 0;
+            room_goto(enforcer_p1_p2_p3_p4_play);
+        }
+    //If 3 players are playing
+        if (global.enforcer_player_4 == false) && (global.enforcer_player_3 == true) 
+        {
+            transition_kind = 0;
+            room_goto(enforcer_p1_p2_p3_play);
+        }
+    //If 2 players are playing
+        if (global.enforcer_player_4 == false) && (global.enforcer_player_3 == false) && (global.enforcer_player_2 == true)
+        {
+            transition_kind = 0;
+            room_goto(enforcer_p1_p2_play);
+        }
+    //If 1 player is playing
+        if (global.enforcer_player_4 == false) && (global.enforcer_player_3 == false) && (global.enforcer_player_2 == false)
+        {
+            transition_kind = 0;
+            room_goto(enforcer_p1_play);
+        }
+

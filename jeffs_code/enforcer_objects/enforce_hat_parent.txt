@@ -1,0 +1,140 @@
+Information about object: enforce_hat_parent
+
+Sprite: <no sprite>
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: <no parent>
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+hat_wearing     = false;        //Am I on top of someone's hat?
+hat_belongs_to  = 0;            //When it's currently being worn by someone
+self_destruct   = false;            //If I am to say goodbye to everyone?
+hat_spin        = false;        //Make the hat spin if shot off
+hat_health      = 1;            //How many bullets/pellets to negate before being shot off
+hat_sound       = blank_audio;  //If I'm a helmet, i'll make metal DINK noise!
+hat_is_helmet   = false;        //Pretty funny, huh?
+hat_which       = 0;
+hat_side_sprite = '';
+hat_spin_sprite = '';
+hat_front_sprite= '';
+image_speed = 0;
+hat_spin_face   = 0;
+hat_face_side   = 'left';       //Accepts left or rite
+//0 = facing right
+//1 = facing diag up rite
+//2 = facing up
+//3 = facing diag up left
+//4 = facing left
+//5 = facing diag down left
+//6 = facing down
+//7 = facing diag down rite
+
+
+//initialize_hat_script(id,hat_which);    ///////When the 2nd argument is passed, it should be != 0
+
+
+
+
+Alarm Event for alarm 0:
+execute code:
+
+
+if(self_destruct==true){instance_destroy();}
+
+
+Alarm Event for alarm 1:
+execute code:
+
+////////////////////////////////////////
+//If hat is shot off....jump up at random direction (WILL FIX)
+vspeed += -2 + irandom_range(-3,0);
+alarm[0] = 480;                     //8 seconds to destroy itself
+hspeed += irandom_range(-10,10) * .10;
+
+/////////////////////////
+//SPIN RANDOMLY. 25% to do so....(WILL FIX LATER ON)
+if (floor(random(4-1)) = 0)
+    {
+        hat_spin = true;
+        sprite_index = hat_spin_sprite;
+    };
+
+
+ Step Event:
+execute code:
+
+////////////////////////////////////////
+//If currently being worn by someone
+if (hat_wearing == true)
+    {
+        if (hat_belongs_to.mask_index == player_stand_mask_sprite) //If wearer is not crouching...
+            {   //If play is not moving, don't adjust for movement
+                if (hat_belongs_to.hspeed == 0){x = hat_belongs_to.x;}
+                //If play is moving rite, 'pop' some pixels ahead
+                if (hat_belongs_to.hspeed > 0) {x = hat_belongs_to.x + 2;}
+                //If play is moving left, 'pop' some pixels ahead
+                if (hat_belongs_to.hspeed < 0) {x = hat_belongs_to.x - 2;} 
+                    
+                y = (hat_belongs_to.y + -6);
+            }
+        if (hat_belongs_to.mask_index == player_crouch_mask_sprite) //If wearer is crouching...
+            {
+                x = hat_belongs_to.x; 
+                y = (hat_belongs_to.y + -2);
+            }
+        //////Now to decide if the hat is facing left or rite, regardless if it looks same on both sides.
+        //////This is to make it more universal!
+        if (hat_belongs_to.hspeed < 0) {hat_face_side   = 'left';}//If wearer is moving left
+        if (hat_belongs_to.hspeed > 0) {hat_face_side   = 'rite';}//If wearer is moving rite
+        ////////////////////Graphically represent the hat to respective side
+        if (hat_face_side == 'left'){if(image_xscale == -1){image_xscale = 1;}}     //NOTE: DOESN'T FLIP HAT IF WEARER ISN'T MOVING BUT CHANGES FACES
+        if (hat_face_side == 'rite'){if(image_xscale ==  1){image_xscale = -1;}}    //NOTE  DOESN'T FLIP HAT IF WEARER ISN'T MOVING BUT CHANGES FACES
+        //////////////////////////////////////////////////////////////////////////////////
+    }
+
+////////////////////////////////////////
+//To make the sprite spin
+if (hat_spin == true)
+{
+    hat_spin_face += 1;
+    if (hat_spin_face > 7)
+        { 
+            hat_spin_face = 0;
+        };
+    //sprite_index = Bullet_Shell_Spin;
+    image_index = hat_spin_face;
+    image_speed = 0;
+};
+//////////////////////////////////
+///THIS IS MEANT FOR GRAVITY
+if (hat_wearing == false)
+    {
+        solid = true;
+        if (place_free(x+0,y+1))
+            {gravity_direction = 270;gravity = 0.5;}
+        else
+            {gravity_direction = 270; gravity = 0;}
+    }
+///////////////////////////////END GRAVITY DOWNWARDS
+
+
+Collision Event with object enforce_solid_object_parent:
+execute code:
+
+///STOP SPINNING IF SPINNING/////
+if (hat_spin == true){hat_spin = false;};
+/////////////////////////////////
+//MEANT FOR STOPPING ON GROUND///
+if(hat_wearing == false)
+{
+    move_contact_solid(direction,12);
+    hspeed = 0;
+    vspeed = 0;
+}
+////////////////////////////////
+

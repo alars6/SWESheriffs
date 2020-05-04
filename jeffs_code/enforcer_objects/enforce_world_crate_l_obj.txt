@@ -1,0 +1,55 @@
+Information about object: enforce_world_crate_l_obj
+
+Sprite: small_crate_SPRITES
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: enforce_scenery_object_parent
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+//sprite_index = small_fence_SPRITES;
+image_index  = 0;
+image_speed  = 0;
+
+//Which side am I facing?
+facing = "left";//"left, right"
+
+next_spawn = 0;
+///INI random sprite assigned to itself
+choose_sprite = 0;
+choose_sprite = irandom_range(0,5);
+image_index = choose_sprite;
+///DON'T SPAWN MORE OF THESE FENCES OUTSIDE THE ROOM
+///OTHERWISE THE GAME WILL CRASH!
+if !(x > room_width) && !( x < 0)
+{
+//Then spawn a different on its left
+if (facing == "left")
+    {
+        //Store the newly created obj's id in var
+        next_spawn = instance_create(x-36,y+0,enforce_world_crate_l_obj);
+        next_spawn.facing = "left";
+    }
+if (facing == "right")
+    {
+        //Store the newly created obj's id in var
+        next_spawn = instance_create(x+24,y+0,enforce_world_crate_r_obj);
+        next_spawn.facing = "right";
+    }
+}
+/////////////////////////////////////////////////////////////////////////
+////////////////////////////////TO HELP WITH REDUCING OBJECTS ONSCREEN
+//IF CURRENT SPRITE EQUALS 'BLANK' SPRITE
+if (image_index == 1 || image_index == 4)
+    {instance_destroy();}
+
+
+Other Event: Outside Room:
+execute code:
+
+instance_destroy();
+

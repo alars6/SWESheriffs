@@ -1,0 +1,20 @@
+Information about object: enforce_world_saloon_obj
+
+Sprite: saloon_sprite
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: enforce_scenery_object_parent
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+///////////////
+//Create all enemy spawners where applicable
+instance_create(x+0,y-32,e_spawn_door_obj);
+instance_create(x-60,y-55,e_spawn_window_obj);
+instance_create(x+60,y-55,e_spawn_window_obj);
+
+

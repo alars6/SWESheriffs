@@ -1,0 +1,2063 @@
+//////////////////PLEASE NOTE THAT JEREMY HELPED WITH THE GUNSAWKIKI ITEMS!!
+
+Information about object: menu_object
+
+Sprite: <no sprite>
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: <no parent>
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+////
+menu_display        = 0;    // For deciding which screen the menu is displaying
+menu_select         = 0;    
+// Cursor selection @ Main Menu # DEFAULT = 0, 1 = controls, 2 = gunsawiki, 3 = retire, -1 = horde
+// Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+// Cursor selection @ Enforce Menu, Default = 0 = p1, 1 = p2, 2 = p3, 3 = p4, 4 = load game of X players,
+// 5 = enforce, 6 = go back!
+menu_sfx_choose     = 0;    // Chooses from 1-3 sfx
+menu_control_choice = 0;    // This var is meant to display which control set up is onscreen.
+//0 is default and meant for keyboard | = 1 = p1 keys, 2 = p2 keys, 3 = p3 keys, 4 = p4 keys, 5 = going back to main menu
+
+menu_player_count   = 1;    //Default is 1 for p1, 2 for p1,p2, 3 for p1,p2,p3, 4 for p1,p2,p3,p4
+                            //-1 is for load solo game, -2 for load 2p game, -3 for load 3p game, -4 for load 4p game
+menu_current_load_error = false;    //If true, display file couldn't be found. However it doesn't prevent loading
+                                    //corrupted/false files. False as in a txt file being renamed to a .sav file
+
+//menu_key_pressed= false;// This is to prevent mutliple key presses in the menu
+//menu_select, 10 -> Menu to Enforce , 20 -> Menu to Controls
+
+
+Alarm Event for alarm 0:
+COMMENT: WE'VE REACHED THE END GAME, GUYS!
+execute code:
+
+//This is it. There's no more to do. You have quit the game.
+game_end();
+//You have lost the will to keep playing. See you next time, pard'ner!
+
+
+Alarm Event for alarm 1:
+COMMENT: This is to change the room's assets to wherever the user's going
+execute code:
+
+///So when the menu_black_screen_obj is on screen, this timer will set to whatever the user selected.
+///REMEMBER AT THIS POINT IN TIME, THE BLACK_SCREEN_OBJ IS STILL ONSCREEN and is intended to hide the graphics changing
+
+//So from Main Menu
+if(menu_display == 0)
+    {
+        //To transition from Menu to Controls
+        if (menu_select == 30)    
+            {
+                menu_display    = 2;       //Set the menu background & assets to Controls
+                alarm[2]        = 61;       //2 Seconds + 1 frame to give the user back the key control
+                exit;
+            }
+    }
+////////////////////////////////////////////////////////////////////////////////
+//So from main menu to enforce screen
+if(menu_display == 0)
+    {
+        if (menu_select == 20)
+            {
+                menu_display    = 1;    //Set the menu background & assets to enforce
+                alarm[2]        =61;    //2 seconds + 1 frame to give the user back the key control they desire
+                ///Create the player objects on the screen BEFORE the black_screen_object fades out
+                instance_create(90,95,menu_enforce_p1_obj);
+                instance_create(120,95,menu_enforce_p2_obj);
+                instance_create(150,95,menu_enforce_p3_obj);
+                instance_create(180,95,menu_enforce_p4_obj);
+                //P1 will be selected by default...always...Sorry about that, matey.
+                menu_enforce_p1_obj.selected = true;
+                exit;
+            }    
+    }    
+////////////////////////////////////////////////////////////////////////////////
+//So from enforce menu to the main menu
+if(menu_display == 1)
+    {
+        //To transition from Controls to Menu
+        if (menu_select == 10)    
+            {
+                menu_display    = 0;       //Set the menu background & assets to Controls
+                alarm[2]        = 61;       //2 Seconds + 1 frame to give the user back the key control
+                //Deleting these player obj's from the enforce menu
+                with (menu_enforce_p1_obj) instance_destroy();
+                with (menu_enforce_p2_obj) instance_destroy();
+                with (menu_enforce_p3_obj) instance_destroy();
+                with (menu_enforce_p4_obj) instance_destroy();
+                menu_player_count   = 1;    //Resetting this var back to its default
+                exit;
+            }
+    }
+       
+////////////////////////////////////////////////////////////////////////////////
+//So from Controls menu
+if(menu_display == 2)
+    {
+        //To transition from Controls to Menu
+        if (menu_select == 10)    
+            {
+                menu_display    = 0;       //Set the menu background & assets to Controls
+                alarm[2]        = 61;       //2 Seconds + 1 frame to give the user back the key control
+                exit;
+            }
+    }
+///////////////////////////    
+//So from main menu to wiki
+if(menu_display == 0)
+    {
+        if(menu_select == 40)
+        {
+            menu_display = 3;
+            alarm[2] = 61
+            exit;
+        }
+    }
+//So from wiki to main menu
+if(menu_display == 3){
+    if(menu_select == 100){
+        menu_display = 0;
+        alarm[2] = 61
+        exit;
+    }
+}
+////////////////////////////////////////////////////////////////////////////////
+//So from Enforcer screen to Enforcer Gameplay!
+if(menu_display == 1)
+    {
+        //To check if actually being told to go to Enforcer Gameplay Rooms
+        if  (menu_select == 50)
+            {   
+                transition_kind = 0;
+                room_goto(enforcer_load);
+            /*If 4 players are playing
+                if (global.enforcer_player_4 == true)
+                    {
+                        transition_kind = 0;
+                        room_goto(enforcer_p1_p2_p3_p4_play);
+                    }
+                //If 3 players are playing
+                if (global.enforcer_player_4 == false) && (global.enforcer_player_3 == true) 
+                    {
+                        transition_kind = 0;
+                        room_goto(enforcer_p1_p2_p3_play);
+                    }
+                //If 2 players are playing
+                if (global.enforcer_player_4 == false) && (global.enforcer_player_3 == false) && (global.enforcer_player_2 == true)
+                    {
+                        transition_kind = 0;
+                        room_goto(enforcer_p1_p2_play);
+                    }
+                //If 1 player is playing
+                if (global.enforcer_player_4 == false) && (global.enforcer_player_3 == false) && (global.enforcer_player_2 == false)
+                    {
+                        transition_kind = 0;
+                        room_goto(enforcer_p1_play);
+                    }
+                */
+            }
+    }
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+Alarm Event for alarm 2:
+COMMENT: To give back the user navigation control
+execute code:
+
+//Lets hope I don't have to do more with this
+if !(menu_select == 0){menu_select = 0;}
+
+
+
+
+Draw Event:
+execute code:
+
+//Test background change
+//background_index[0] = generic_background; // UPDATE THIS WORKS AS EXPECTED!
+
+//Play & loop menu music if not blank
+if !(global.menu_music == blank_audio) && !(sound_isplaying(global.menu_music)) && !(menu_select == 50)
+    {
+        sound_loop(global.menu_music);
+        sound_volume(global.menu_music,.9); //Please
+    }
+
+//default menu screen 
+if (menu_display == 0)
+    {
+        //Draw the background in case if it changes
+        if !(background_index[0] == menu_background) {background_index[0] = menu_background;}
+              
+        //menu_select = 0;    // Default menu selection to "Enforce"
+        if(global.horde_unlocked == false) {draw_sprite(menu_options_gfx,0,48,171)};
+        if(global.horde_unlocked == true)  {draw_sprite(menu_2_options_gfx,0,48,171)};
+        draw_sprite(menu_version,0,240,45);     //Indicate which version this copy is..
+        draw_sprite(menu_notice_gfx, 0,5,260);  // For generic menu note
+        if (menu_select == 0) // If coursor is on Enforce
+            {
+                draw_sprite(menu_selection_left_gfx,0,48,204);
+                draw_sprite(menu_selection_rite_gfx,0,131,204);
+            }
+        if (menu_select == 1) // If cursor is on Controls
+            {
+                draw_sprite(menu_selection_left_gfx,0,150,204);
+                draw_sprite(menu_selection_rite_gfx,0,238,204);
+            }
+        if (menu_select == 2) // If cursor is on Gunsa Wiki
+            {
+                draw_sprite(menu_selection_left_gfx,0,48,233);
+                draw_sprite(menu_selection_rite_gfx,0,148,233);
+            }
+        if (menu_select == 3) // If cursor is on Retire
+            {
+                draw_sprite(menu_selection_left_gfx,0,168,233);
+                draw_sprite(menu_selection_rite_gfx,0,238,233);
+            }
+        if (menu_select == -1)// If cursor is on Horde
+            {
+                draw_sprite(menu_selection_left_gfx,0,109,175);
+                draw_sprite(menu_selection_rite_gfx,0,174,175);
+            }
+    }
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+//If selected ENFORCE
+if (menu_display == 1)
+    {
+        //Draw the background in case if it changes
+        if !(background_index[0] == enforcer_screen_background) {background_index[0] = enforcer_screen_background;}
+        //Now draw the graphics onscreen
+        draw_sprite(menu_enforce_title_text_sprite,0,59,6);  //The enforce Header
+        draw_sprite(menu_enforce_text_sprite,0,118,230);     //The enforce option
+        draw_sprite(menu_back_sprite,0,109,266);             //The back button
+        //menu_player_count   = 1
+        //IF 1 PLAYER IS SELECTED
+        if (menu_player_count == 1)
+            {
+                draw_sprite_ext(menu_p1_select_text_sprite,0,49,162,1,1,0,c_red,1);
+                draw_sprite(menu_enforce_load_solo_text_sprite,0,88,194);
+            }else
+                {
+                    draw_sprite(menu_p1_select_text_sprite,0,49,162);
+                }
+        
+        //IF 2 PLAYERS ARE SELECTED
+        if (menu_player_count == 2)
+            {
+                draw_sprite_ext(menu_p2_select_text_sprite,0,111,162,1,1,0,c_red,1);
+                draw_sprite(menu_enforce_load_p1_p2_text_sprite,0,88,194);
+            }else
+                {
+                    draw_sprite(menu_p2_select_text_sprite,0,111,162);
+                }
+        //IF 3 PLAYERS ARE SELECTED
+        if (menu_player_count == 3)
+            {
+                draw_sprite_ext(menu_p3_select_text_sprite,0,173,162,1,1,0,c_red,1);
+                draw_sprite(menu_enforce_load_p1_p3_text_sprite,0,88,194);
+            }else
+                {
+                    draw_sprite(menu_p3_select_text_sprite,0,173,162);
+                }
+        //IF 4 players are selected
+        if (menu_player_count == 4)
+            {
+                draw_sprite_ext(menu_p4_select_text_sprite,0,231,162,1,1,0,c_red,1);
+                draw_sprite(menu_enforce_load_p1_p4_text_sprite,0,88,194);
+            }else
+                {
+                    draw_sprite(menu_p4_select_text_sprite,0,231,162);
+                }
+    /// Now for drawing the menu cursor!
+    // Cursor selection @ Enforce Menu, Default = 0 = p1, 1 = p2, 2 = p3, 3 = p4, 4 = load game of X players,
+    // 5 = enforce, 6 = go back!
+        if (menu_select == 0) // If coursor is on P1
+        {
+            draw_sprite(menu_selection_left_gfx,0,32,166);
+            draw_sprite(menu_selection_rite_gfx,0,69,166);
+        }
+        if (menu_select == 1) // If coursor is on P2
+        {
+            draw_sprite(menu_selection_left_gfx,0,94,166);
+            draw_sprite(menu_selection_rite_gfx,0,131,166);
+        }
+        if (menu_select == 2) // If coursor is on P3
+        {
+            draw_sprite(menu_selection_left_gfx,0,156,166);
+            draw_sprite(menu_selection_rite_gfx,0,193,166);
+        }
+        if (menu_select == 3) // If coursor is on P4
+        {
+            draw_sprite(menu_selection_left_gfx,0,214,166);
+            draw_sprite(menu_selection_rite_gfx,0,251,166);
+        }
+        if (menu_select == 4) // If coursor is on LOAD GAME
+        {
+            draw_sprite(menu_selection_left_gfx,0,71,198);
+            draw_sprite(menu_selection_rite_gfx,0,207,198);
+        }
+        if (menu_select == 5) // If coursor is on ENFORCE
+        {
+            draw_sprite(menu_selection_left_gfx,0,101,234);
+            draw_sprite(menu_selection_rite_gfx,0,184,234);
+        }
+        if (menu_select == 6) // If coursor is on BACK
+        {
+            draw_sprite(menu_selection_left_gfx,0,112,270);
+            draw_sprite(menu_selection_rite_gfx,0,169,270);
+        }
+    }
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+//If selected CONTROLS
+if (menu_display == 2)
+    {
+        //Draw the background in case if it changes
+        if !(background_index[0] == generic_background) {background_index[0] = generic_background;}
+        //Now draw the graphics onscreen
+        draw_sprite(menu_controls_sprite,0,117,6);  //The Control Header
+        //THOSE that have no "!", means that it'll be colored red.
+        // Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+        ////0 is default and meant for keyboard | = 1 = p1 keys, 2 = p2 keys, 3 = p3 keys, 4 = p4 keys, 5 = going back to main menu
+        
+        if  (menu_control_choice == 1)
+            {
+                draw_sprite_ext(menu_p1_keys_text_sprite,0,38,212,1,1,0,c_red,1);
+                draw_sprite(menu_p1_control_map_sprite,0,0,34);
+            }
+        if !(menu_control_choice == 1){draw_sprite(menu_p1_keys_text_sprite,0,38,212);}
+        
+        if  (menu_control_choice == 2)
+            {
+                draw_sprite_ext(menu_p2_keys_text_sprite,0,171,212,1,1,0,c_red,1);
+                draw_sprite(menu_p2_control_map_sprite,0,00,34);
+            }
+        if !(menu_control_choice == 2){draw_sprite(menu_p2_keys_text_sprite,0,171,212);}  
+        
+        if  (menu_control_choice == 3)
+            {
+                draw_sprite_ext(menu_p3_keys_text_sprite,0,38,240,1,1,0,c_red,1);
+                draw_sprite(menu_p3_control_map_sprite,0,0,34);
+            }
+        if !(menu_control_choice == 3){draw_sprite(menu_p3_keys_text_sprite,0,38,240);}  
+        
+        if  (menu_control_choice == 4)
+            {
+                draw_sprite_ext(menu_p4_keys_text_sprite,0,171,240,1,1,0,c_red,1);
+                draw_sprite(menu_p4_control_map_sprite,0,0,34);
+            }
+        if !(menu_control_choice == 4){draw_sprite(menu_p4_keys_text_sprite,0,171,240);}
+
+        if  (menu_control_choice == 0)
+            {
+                draw_sprite_ext(menu_keyboard_text_sprite,0,29,268,1,1,0,c_red,1);
+                draw_sprite(menu_keyboard_layout_sprite,0,0,34);
+            }
+        if !(menu_control_choice == 0){draw_sprite(menu_keyboard_text_sprite,0,29,268);}
+        draw_sprite(menu_back_sprite,0,178,268);
+        // Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+        if (menu_select == 0) // If coursor is on KEYBOARD
+        {
+            draw_sprite(menu_selection_left_gfx,0,33,273);
+            draw_sprite(menu_selection_rite_gfx,0,125,273);
+        }
+        if (menu_select == 1) // If coursor is on BACK
+        {
+            draw_sprite(menu_selection_left_gfx,0,182,273);
+            draw_sprite(menu_selection_rite_gfx,0,239,273);
+        }
+        if (menu_select == 2) // If coursor is on P3 KEYS
+        {
+            draw_sprite(menu_selection_left_gfx,0,42,245);
+            draw_sprite(menu_selection_rite_gfx,0,114,245);
+        }
+        if (menu_select == 3) // If coursor is on P4 KEYS
+        {
+            draw_sprite(menu_selection_left_gfx,0,175,245);
+            draw_sprite(menu_selection_rite_gfx,0,247,245);
+        }
+        if (menu_select == 4) // If coursor is on P1 KEYS
+        {
+            draw_sprite(menu_selection_left_gfx,0,42,217);
+            draw_sprite(menu_selection_rite_gfx,0,114,217);
+        }
+        if (menu_select == 5) // If coursor is on P2 KEYS
+        {
+            draw_sprite(menu_selection_left_gfx,0,175,217);
+            draw_sprite(menu_selection_rite_gfx,0,247,217);
+        }
+    }
+/////////////////////////////////////////////////////////////////////////
+//If selected GUNSAWIKI
+if (menu_display == 3)
+    {
+        if(menu_select < 100){
+            if !(background_index[0] == wiki_background) {background_index[0] = wiki_background;}
+        
+        
+            if(menu_select == 0){
+                draw_sprite(menu_gunsawiki_revolver_text_selected_sprite,0,20,180);
+            }
+            else if(menu_select == 1){
+                draw_sprite(menu_gunsawiki_pistol_text_selected_sprite,0,123,180);
+            }
+            else if(menu_select == 2){
+                draw_sprite(menu_gunsawiki_rifle_text_selected_sprite,0,215,180);
+            }
+            else if(menu_select == 3){
+                draw_sprite(menu_gunsawiki_shotgun_text_selected_sprite,0,20,240);
+            }
+            else if(menu_select == 4){
+                draw_sprite(menu_gunsawiki_repeater_text_selected_sprite,0,110,240);
+            }
+            else if(menu_select == 5){
+                draw_sprite(menu_back_wiki_selected_sprite,0,200,240);
+            }
+        
+            else if(menu_select >= 11 && menu_select <= 20 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Revolver",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 11){
+                    draw_text_color(25,50,"Rusty Revolver",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 21 && menu_select <= 30 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Pistol",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 21){
+                    draw_text_color(25,50,"Rusty Pistol",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 31 && menu_select <= 40 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Rifle",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 31){
+                    draw_text_color(25,50,"Rusty Rifle",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 41 && menu_select <= 50 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Shotty",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 41){
+                    draw_text_color(25,50,"Rusty Shotty",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            else if(menu_select >= 51 && menu_select <= 60 || menu_select == 0){
+                draw_text_color(25,50,"Rusty Repeater",c_silver,c_silver,c_silver,c_silver,1);
+                draw_text_color(25,150,"Back",c_silver,c_silver,c_silver,c_silver,1);
+                if(menu_select == 51){
+                    draw_text_color(25,50,"Rusty Repeater",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }else{
+                    draw_text_color(25,150,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                }
+            }
+        
+            draw_sprite(menu_gunsawiki_revolver_text_sprite,0,20,180);
+            draw_sprite(menu_gunsawiki_pistol_text_sprite,0,123,180);
+            draw_sprite(menu_gunsawiki_rfile_text_sprite,0,215,180);
+            draw_sprite(menu_gunsawiki_shotgun_text_sprite,0,20,240);
+            draw_sprite(menu_gunsawiki_repeater_text_sprite,0,110,240);
+            draw_sprite(menu_back_wiki_sprite,0,200,240);
+            /*
+            if(menu_select == 0){
+                draw_sprite(menu_gunsawiki_revolver_text_selected_sprite,0,20,180);
+            }
+            else if(menu_select == 1){
+                draw_sprite(menu_gunsawiki_pistol_text_selected_sprite,0,123,180);
+            }
+            else if(menu_select == 2){
+                draw_sprite(menu_gunsawiki_rifle_text_selected_sprite,0,215,180);
+            }
+            else if(menu_select == 3){
+                draw_sprite(menu_gunsawiki_shotgun_text_selected_sprite,0,20,240);
+            }
+            else if(menu_select == 4){
+                draw_sprite(menu_gunsawiki_repeater_text_selected_sprite,0,110,240);
+            }
+            else if(menu_select == 5){
+                draw_sprite(menu_back_wiki_selected_sprite,0,200,240);
+            */
+            
+        }else if(menu_select > 100){
+            if !(background_index[0] == generic_background) {background_index[0] = generic_background;}
+            
+            if(menu_select == 111){//revolver
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses :Revolver Rounds
+Holds:5 Bullets
+Base Damage: 20
+Max Crit Dmg: 40
+Base Reload Speed: 1.2sec/round
+Smash Reload Speed: 0.6sec/round
+Hip Weapon Stats:
+Hit Miss: 30%
+Fire Speed: ~.63sec.round
+Crit Chance: 40%
+Max Inaccuracy: +2/-2
+Aim Weapon Stats:
+Hit Miss: 15%\n
+Fire Speed: 1.25sec/round
+Crit Chance: 25%
+Max Inaccuracy: +1/-1\",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+            else if(menu_select == 121){//pistol
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Pistol Rounds
+Holds: 5 Bullets
+Base Damage: 15
+Max Crit Dmg: 30
+Base Reload Speed: 2.0sec/5round
+Smash Reload Speed: 1.3sec/5round
+Hip Weapon Stats||
+Hit Miss: 40%
+Fire Speed: 0.3sec/round
+Crit Chance: 30%
+Max Inaccuracy: +2.5/-2.5
+Aim Weapon Stats||
+Hit Miss: 25%
+Fire Speed: 0.6sec/round
+Crit Chance: 20%
+Max Inaccuracy: +1.5/-1.5",
+                        c_silver,c_silver,c_silver,c_silver,1);
+
+            }
+            else if(menu_select == 131){//rifle
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Rifle Rounds
+Holds: 1
+Base Damage: 50
+Max Crit Dmg: 100
+Base Reload Speed: 3sec/round
+Smash Reload Speed: 2sec/round
+Hip Weapon Stats||
+Hit Miss: 50%
+Fire Speed: 1 sec/round
+Crit Chance: 50%
+Max Inaccuracy: +3/-3
+Aim Weapon Stats||
+Hit Miss: 30%
+Fire Speed: 1 sec/round
+Crit Chance: 30%
+Max Inaccuracy: +1.75/-1.75",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+            else if(menu_select == 141){//shotty
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Shotgun Rounds
+Holds: 1
+Base Damage: 100 / 5
+Max Crit Dmg: 150 / 5
+Base Reload Speed: 4sec/round
+Smash Reload Speed: 3sec/round
+Hip Weapon Stats||
+Hit Miss: 20%/pellet
+Fire Speed: 1 sec/round
+Crit Chance: 20%/pellet  
+Max Inaccuracy: +2.25/-2.25
+Aim Weapon Stats||
+Hit Miss: 15%/pellet
+Fire Speed: 1 sec/round
+Crit Chance: 25%/pellet
+Max Inaccuracy: +1.75/-1.75",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+            else if(menu_select == 151){//repeater
+                draw_text_color(225,275,"Back",c_yellow,c_yellow,c_yellow,c_yellow,1);
+                draw_text_color(10,5,
+"Uses : Repeater Rounds
+Holds: 4 Bullets
+Base Damage: 25
+Max Crit Dmg: 50
+Base Reload Speed: 1.2sec/round
+Smash Reload Speed: 0.6sec/round
+Hip Weapon Stats||
+Hit Miss: 35% 
+Fire Speed: ~1.2sec/round
+Crit Chance: 30%
+Max Inaccuracy: +2.0/-2.0
+Aim Weapon Stats||
+Hit Miss: 25%
+Fire Speed: ~2.0sec/round
+Crit Chance: 15%
+Max Inaccuracy: +1.5/-1.5",
+                        c_silver,c_silver,c_silver,c_silver,1);
+            }
+        }
+        
+        
+    
+    }
+/////////////////////////////////////////////////////////////////////////
+//If selected HORDE
+if (menu_display == 4)
+    {
+    
+    }
+
+
+Key Press Event for A-key Key:
+execute code:
+
+
+//menu_select     = 0; // Cursor selection # DEFAULT = 0, 1 = controls, 2 = gunsawiki, 3 = retire, -1 = horde 
+//If currently on HORDE mode
+
+//If user is on Main Menu
+/////////////////////////////////////////////////////
+if(menu_display == 0)
+{
+if (global.horde_unlocked == true)
+{
+    if (menu_select == -1)
+    {
+        menu_select = 0;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}
+
+//If currently on ENFORCE selection
+if (menu_select == 0)
+    {
+        menu_select = 1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on CONTROLS selection
+if (menu_select == 1)
+    {
+        menu_select = 0;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on GUNSAWIKI selection
+if (menu_select == 2)
+    {
+        menu_select = 3;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}        
+        exit;
+    }
+//If currently on RETIRE selection
+if (menu_select == 3)
+    {
+        menu_select = 2;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////
+//If user is on enforce screen
+if(menu_display == 1)
+    {
+// Cursor selection @ Enforce Menu, Default = 0 = p1, 1 = p2, 2 = p3, 3 = p4, 4 = load game of X players,
+// 5 = enforce, 6 = go back! 
+        //If on p1 -> p4
+        if (menu_select == 0)
+            {
+                menu_select = 3;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on p4 -> p3
+        if (menu_select == 3)
+            {
+                menu_select = 2;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on p3 -> p2
+        if (menu_select == 2)
+            {
+                menu_select = 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on p2 -> p1
+        if (menu_select == 1)
+            {
+                menu_select = 0;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+    }
+///////////////////////////////////////////////////////////////////////////////
+// Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+//If User is on Controls Menu
+if(menu_display == 2)
+    {
+        //If on KEYBOARD -> BACK
+        if (menu_select == 0)
+            {
+                menu_select = 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on BACK -> KEYBOARDS
+        if (menu_select == 1)
+            {
+                menu_select = 0;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P3 KEYS -> P4 KEYS
+        if (menu_select == 2)
+            {
+                menu_select = 3;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P4 KEYS -> P3 KEYS
+        if (menu_select == 3)
+            {
+                menu_select = 2;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P1 KEYS -> P2 KEYS
+        if (menu_select == 4)
+            {
+                menu_select = 5;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P2 KEYS -> P1 KEYS
+        if (menu_select == 5)
+            {
+                menu_select = 4;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+    }
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//If user is on Gunsawiki Menu
+if(menu_display == 3)
+    {
+        if(menu_select == 1){
+            menu_select = 0;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select == 2){
+            menu_select = 1;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select == 4){
+            menu_select = 3;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select == 5){
+            menu_select = 4;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+
+        
+    }
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+Key Press Event for D-key Key:
+execute code:
+
+
+//menu_select     = 0; // Cursor selection # DEFAULT = 0, 1 = controls, 2 = gunsawiki, 3 = retire, -1 = horde 
+//If user is on Menu Screen
+if(menu_display == 0)
+{
+//If currently on HORDE mode
+if (global.horde_unlocked == true)
+{
+    if (menu_select == -1)
+    {
+        menu_select = 1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}
+
+
+//If currently on ENFORCE selection
+if (menu_select == 0)
+    {
+        menu_select = 1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on CONTROLS selection
+if (menu_select == 1)
+    {
+        menu_select = 0;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on GUNSAWIKI selection
+if (menu_select == 2)
+    {
+        menu_select = 3;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on RETIRE selection
+if (menu_select == 3)
+    {
+        menu_select = 2;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////
+//If user is on enforce screen
+if(menu_display == 1)
+    {
+        //If on p4 -> p1
+        if (menu_select == 3)
+            {
+                menu_select = 0;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on p1 -> p2
+        if (menu_select == 0)
+            {
+                menu_select = 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on p2 -> p3
+        if (menu_select == 1)
+            {
+                menu_select = 2;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on p3 -> p4
+        if (menu_select == 2)
+            {
+                menu_select = 3;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+    }
+///////////////////////////////////////////////////////////////////////////////
+// Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+//If User is on Controls Menu
+if(menu_display == 2)
+    {
+        //If on KEYBOARD -> BACK
+        if (menu_select == 0)
+            {
+                menu_select = 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on BACK -> KEYBOARDS
+        if (menu_select == 1)
+            {
+                menu_select = 0;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P3 KEYS -> P4 KEYS
+        if (menu_select == 2)
+            {
+                menu_select = 3;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P4 KEYS -> P3 KEYS
+        if (menu_select == 3)
+            {
+                menu_select = 2;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P1 KEYS -> P2 KEYS
+        if (menu_select == 4)
+            {
+                menu_select = 5;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+        //If on P2 KEYS -> P1 KEYS
+        if (menu_select == 5)
+            {
+                menu_select = 4;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+    }
+///////////////////////////////////////////////////////////////////////////////
+//If user is on Gunsawiki Menu
+if(menu_display == 3)
+    {
+        if(menu_select == 0){
+            menu_select = 1;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        if(menu_select == 1){
+            menu_select = 2;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        if(menu_select == 3){
+            menu_select = 4;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        if(menu_select == 4){
+            menu_select = 5;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+    }
+//////
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+Key Press Event for J-key Key:
+COMMENT: This event chooses what the user desires to see/do,
+execute code:
+
+//menu_select     = 0;    // Cursor selection # DEFAULT = 0, 1 = controls, 2 = gunsawiki, 3 = retire, -1 = horde
+//If currently on main menu
+if (menu_display == 0)
+    {
+        //If choosing HORDE
+        if(menu_select == -1)
+            {
+                exit;
+            }
+
+        //If choosing ENFORCE
+        if(menu_select == 0)
+            {
+                //Create the custom "fade in/out" obj
+                instance_create(0,0,menu_black_screen_obj);
+                menu_select = 20;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        //If choosing CONTROLS
+        if(menu_select == 1)
+            {
+                //Create the custom "fade in/out" obj
+                instance_create(0,0,menu_black_screen_obj);
+                menu_select = 30;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        //If choosing GUNSAWIKI
+        if(menu_select == 2)
+            {
+                instance_create(0,0,menu_black_screen_obj);
+                menu_select = 40;
+                alarm[1] = 61;
+                menu_sfx_choose = 0;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+
+        //If quitting the game
+        if(menu_select == 3)
+            {
+                menu_select = 9;        //To prevent the user from doing anything for 2 seconds
+                alarm[0]    = 60;       //2 seconds to quit the game formally
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                //sound_play();
+                exit;
+            }
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//IF ON ENFORCE SCREEN
+if (menu_display == 1)
+    {
+// Cursor selection @ Enforce Menu, Default = 0 = p1, 1 = p2, 2 = p3, 3 = p4, 4 = load game of X players,
+// 5 = enforce, 6 = go back!
+
+        //If choosing p1 only & not previously selected
+        if (menu_select == 0) && !(menu_player_count == 1) && (menu_enforce_p2_obj.animating == false)  && (menu_enforce_p3_obj.animating == false)  && (menu_enforce_p4_obj.animating == false)
+            {
+                menu_player_count = 1;      // Set to 1 player only
+                
+                //To deselect all other players if previously selected & making sure other sprites are not being animating
+                //Tell p2 it's deselected
+                if (menu_enforce_p2_obj.sprite_index == menu_enforce_p2_selected_sprite) && (menu_enforce_p2_obj.image_index = 8)
+                    { 
+                        menu_enforce_p2_obj.deselected = true; menu_enforce_p2_obj.select_stop = false; 
+                        menu_enforce_p2_obj.sprite_index = menu_enforce_p2_deselected_sprite;
+                        menu_enforce_p2_obj.selected= false;
+                        global.enforcer_player_2 = false;
+                    }
+                    //Tell p3 it's deselected
+                if (menu_enforce_p3_obj.sprite_index == menu_enforce_p3_selected_sprite) && (menu_enforce_p3_obj.image_index = 8)
+                    { 
+                        menu_enforce_p3_obj.deselected = true; menu_enforce_p3_obj.select_stop = false; 
+                        menu_enforce_p3_obj.sprite_index = menu_enforce_p3_deselected_sprite;
+                        menu_enforce_p3_obj.selected = false;
+                        global.enforcer_player_3 = false;
+                    }
+                    //Tell p4 it's deselected
+                if (menu_enforce_p4_obj.sprite_index == menu_enforce_p4_selected_sprite) && (menu_enforce_p4_obj.image_index = 8)
+                    { 
+                        menu_enforce_p4_obj.deselected = true; menu_enforce_p4_obj.select_stop = false; 
+                        menu_enforce_p4_obj.sprite_index = menu_enforce_p4_deselected_sprite;
+                        menu_enforce_p4_obj.selected = false;
+                        global.enforcer_player_4 = false;
+                    }
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        //If choosing p1,p2 only & not previously selected
+        if (menu_select == 1) && !(menu_player_count == 2) && (menu_enforce_p2_obj.animating == false)  && (menu_enforce_p3_obj.animating == false)  && (menu_enforce_p4_obj.animating == false)
+            {
+                menu_player_count = 2;      // Set to p1,p2
+                //If p2 has been previously deselected...
+                if (menu_enforce_p2_obj.selected == false)
+                    {
+                        menu_enforce_p2_obj.selected = true;
+                        menu_enforce_p2_obj.sprite_index = menu_enforce_p2_selected_sprite;
+                        global.enforcer_player_2 = true;
+                    }
+                /////////Continued           ////////////Continued            ////////////
+                //Tell p3 it's deselected
+                if (menu_enforce_p3_obj.sprite_index == menu_enforce_p3_selected_sprite) && (menu_enforce_p3_obj.image_index = 8)
+                    { 
+                        menu_enforce_p3_obj.deselected = true; menu_enforce_p3_obj.select_stop = false; 
+                        menu_enforce_p3_obj.sprite_index = menu_enforce_p3_deselected_sprite;
+                        menu_enforce_p3_obj.selected = false;
+                        global.enforcer_player_3 = false;
+                    }
+                    //Tell p4 it's deselected
+                if (menu_enforce_p4_obj.sprite_index == menu_enforce_p4_selected_sprite) && (menu_enforce_p4_obj.image_index = 8)
+                    { 
+                        menu_enforce_p4_obj.deselected = true; menu_enforce_p4_obj.select_stop = false; 
+                        menu_enforce_p4_obj.sprite_index = menu_enforce_p4_deselected_sprite;
+                        menu_enforce_p4_obj.selected = false;
+                        global.enforcer_player_4 = false;
+                    }
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        //If choosing p1,p2,p3 only & not previously selected
+        if (menu_select == 2) && !(menu_player_count == 3) && (menu_enforce_p2_obj.animating == false)  && (menu_enforce_p3_obj.animating == false)  && (menu_enforce_p4_obj.animating == false)
+            {
+                menu_player_count = 3;      // Set to p1,p2,p3
+                //If p2 has been previously deselected...
+                if (menu_enforce_p2_obj.selected == false)
+                    {
+                        menu_enforce_p2_obj.selected = true;
+                        menu_enforce_p2_obj.sprite_index = menu_enforce_p2_selected_sprite;
+                        global.enforcer_player_2 = true;
+                    }
+                //If p3 has been previously deselected...
+                if (menu_enforce_p3_obj.selected == false)
+                    {
+                        menu_enforce_p3_obj.selected = true;
+                        menu_enforce_p3_obj.sprite_index = menu_enforce_p3_selected_sprite;
+                        global.enforcer_player_3 = true;
+                    }
+                    
+                /////////Continued           ////////////Continued            ////////////
+                //Tell p4 it's deselected
+                if (menu_enforce_p4_obj.sprite_index == menu_enforce_p4_selected_sprite) && (menu_enforce_p4_obj.image_index = 8)
+                    { 
+                        menu_enforce_p4_obj.deselected = true; menu_enforce_p4_obj.select_stop = false; 
+                        menu_enforce_p4_obj.sprite_index = menu_enforce_p4_deselected_sprite;
+                        menu_enforce_p4_obj.selected = false;
+                        global.enforcer_player_4 = false;
+                    }    
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        //If choosing p1,p2,p3,p4 & not previously selected
+        if (menu_select == 3) && !(menu_player_count == 4) && (menu_enforce_p2_obj.animating == false)  && (menu_enforce_p3_obj.animating == false)  && (menu_enforce_p4_obj.animating == false)
+            {
+                menu_player_count = 4;      // Set to p1,p2,p3,p4
+                
+                //If p2 has been previously deselected...
+                if (menu_enforce_p2_obj.selected == false)
+                    {
+                        menu_enforce_p2_obj.selected = true;
+                        menu_enforce_p2_obj.sprite_index = menu_enforce_p2_selected_sprite;
+                        global.enforcer_player_2 = true;
+                    }
+                //If p3 has been previously deselected...
+                if (menu_enforce_p3_obj.selected == false)
+                    {
+                        menu_enforce_p3_obj.selected = true;
+                        menu_enforce_p3_obj.sprite_index = menu_enforce_p3_selected_sprite;
+                        global.enforcer_player_3 = true;
+                    }
+                //If p4 has been previously deselected...
+                if (menu_enforce_p4_obj.selected == false)
+                    {
+                        menu_enforce_p4_obj.selected = true;
+                        menu_enforce_p4_obj.sprite_index = menu_enforce_p4_selected_sprite;
+                        global.enforcer_player_2 = true;
+                    }
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        //If choosing to load game
+        if (menu_select == 4)
+        {
+            //EMPTY
+        }    
+            
+        //IF choosing the Enforce already!!
+        if (menu_select == 5)
+        {
+                //Create the custom "fade in/out" obj
+                instance_create(0,0,menu_black_screen_obj);
+                menu_select = 50;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                /////Stop the Menu Music if Playing
+                if (sound_isplaying(global.menu_music)){sound_stop(global.menu_music);}
+                exit;
+        }
+            
+        //If going from enforce to main screen
+        if (menu_select == 6)
+            {
+                //Create the custom "fade in/out" obj
+                instance_create(0,0,menu_black_screen_obj);
+                menu_select = 10;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+    }
+
+///////////////////////////////////////////////////////////////////////////////
+//IF ON CONTROLS SCREEN | 
+//menu_control_choice
+if (menu_display == 2)
+    {
+// Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+////0 is default and meant for keyboard | = 1 = p1 keys, 2 = p2 keys, 3 = p3 keys, 4 = p4 keys, 5 = going back to main menu
+        //If selecting keyboard & not previously selected
+        if (menu_select == 0) && !(menu_control_choice == 0)
+            {
+                menu_control_choice = 0;
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        ///If selecting p1 keys & not previously selected
+        if (menu_select == 4) && !(menu_control_choice == 1)
+            {
+                menu_control_choice = 1;
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        ///If selecting p2 keys & not previously selected
+        if (menu_select == 5) && !(menu_control_choice == 2)
+            {
+                menu_control_choice = 2;
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        ///If selecting p3 keys & not previously selected
+        if (menu_select == 2) && !(menu_control_choice == 3)
+            {
+                menu_control_choice = 3;
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        ///If selecting p4 keys & not previously selected
+        if (menu_select == 3) && !(menu_control_choice == 4)
+            {
+                menu_control_choice = 4;
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            }
+        ///If selecting back to main menu-----------------------------------------------
+        if (menu_select == 1) && !(menu_control_choice == 5)
+            {
+                //Create the custom "fade in/out" obj
+                instance_create(0,0,menu_black_screen_obj);
+                menu_select = 10;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+    }
+///////////////////////////////////////////////////////////////////////////////
+//IF ON WIKI SCREEN | 
+//menu_control_choice
+if (menu_display == 3)
+    {
+        if (menu_select == 0)//revolver
+            {
+                menu_select = 11;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        if (menu_select == 1)//pistol
+            {
+                menu_select = 21;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        if (menu_select == 2)//rifles
+            {
+                menu_select = 31;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        if (menu_select == 3)//shotgun
+            {
+                menu_select = 41;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        if (menu_select == 4)//repeater
+            {
+                menu_select = 51;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        if (menu_select == 5)
+            {
+                //Create the custom "fade in/out" obj
+                instance_create(0,0,menu_black_screen_obj);
+                menu_select = 100;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+            } 
+        if(menu_select == 11){
+                menu_select = 111;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+        }
+        else if(menu_select == 21){
+                menu_select = 121;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+        }
+        else if(menu_select == 31){
+                menu_select = 131;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+        }
+        else if(menu_select == 41){
+                menu_select = 141;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+        }
+        else if(menu_select == 51){
+                menu_select = 151;        //To prevent the user from doing anything for 6 seconds & tell what the user selected
+                alarm[1]    = 61;       //2 + 1 frame(s) seconds to start changing the menu
+                menu_sfx_choose = 0;    // Chooses from 1-3 sfx
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_select_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_select_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_select_sfx_3);}
+                exit;
+        }
+        else{
+            menu_select = 0;
+        }
+
+  }
+
+
+
+Key Press Event for O-key Key:
+COMMENT: delete me after testing
+execute code:
+
+transition_kind = 0;
+room_restart();
+
+
+Key Press Event for P-key Key:
+COMMENT: delete me after testing
+execute code:
+
+if(global.horde_unlocked  == false)
+    {
+        global.horde_unlocked = true;
+        menu_select = 0;
+        exit;
+    }
+
+if(global.horde_unlocked == true)
+    {
+        global.horde_unlocked = false;
+        menu_select = 0;
+        exit;
+    }
+
+
+Key Press Event for S-key Key:
+execute code:
+
+
+//menu_select     = 0; // Cursor selection # DEFAULT = 0, 1 = controls, 2 = gunsawiki, 3 = retire, -1 = horde 
+
+//If user is on main menu
+if (menu_display == 0)
+{
+//If currently on ENFORCE selection
+if (menu_select == 0)
+    {
+        menu_select = 2;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+    
+//If horde mode is locked, then it'll move downwards to ENFORCE
+if (global.horde_unlocked == false)
+{
+//If currently on GUNSAWIKI selection
+if (menu_select == 2)
+    {
+        menu_select = 0;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}///////
+//If horde mode is locked, then it'll move downwards from GUNSAWIKI to HORDE
+if (global.horde_unlocked == true)
+{
+if (menu_select == 2)
+    {
+        menu_select = -1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}///////
+//If horde mode is locked, then it'll move downwards from RETIRE to HORDE
+if (global.horde_unlocked == true)
+{
+if (menu_select == 3)
+    {
+        menu_select = -1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}///////
+
+//If currently on CONTROLS selection
+if (menu_select == 1)
+    {
+        menu_select = 3;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on RETIRE selection
+if (menu_select == 3)
+    {
+        menu_select = 1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+
+}
+//////////////////////////////////////////////////////////////////////////////
+//If user is on enforce screen
+if(menu_display == 1)
+    {
+// Cursor selection @ Enforce Menu, Default = 0 = p1, 1 = p2, 2 = p3, 3 = p4, 4 = load game of X players,
+// 5 = enforce, 6 = go back!
+
+    //If on BACK option -> pX options
+    if (menu_select == 6)
+        {
+            //Since there's 4 options to move 'up', it'll decide based on # of current players
+            if (menu_player_count == 1){menu_select =0;}
+            if (menu_player_count == 2){menu_select =1;}
+            if (menu_player_count == 3){menu_select =2;}
+            if (menu_player_count == 4){menu_select =3;}
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+    //If on p1-p4 options -> load game
+    if (menu_select < 4)
+        {
+            menu_select = 4;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+    //If on load game -> enforce
+    if (menu_select == 4)
+        {
+            menu_select = 5;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+    //If on enforce -> back option
+    if (menu_select == 5)
+        {
+            menu_select = 6;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+    }
+///////////////////////////////////////////////////////////////////////////////
+// Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+//If User is on Controls Menu
+if(menu_display == 2)
+    {
+        //If on keyboard -> P1 keys
+        if(menu_select == 0)
+            {
+                menu_select = 4;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p1 keys -> p3 keys
+        if(menu_select == 4)
+            {
+                menu_select = 2;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p3 keys -> keyboard
+        if(menu_select == 2)
+            {
+                menu_select = 0;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on back -> p2 keys
+        if(menu_select == 1)
+            {
+                menu_select = 5;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p2 keys -> p4 keys
+        if(menu_select == 5)
+            {
+                menu_select = 3;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p2 keys -> back
+        if(menu_select == 3)
+            {
+                menu_select = 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+    }
+///////////////////////////////////////////////////////////////////////////////
+//If user is on Gunsawiki Menu
+if(menu_display == 3)
+    {
+        if(menu_select == 0){
+            menu_select = 3;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select == 1){
+            menu_select = 4;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select == 2){
+            menu_select = 5;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select >= 11 && menu_select <= 99){
+            if(menu_select != 12 && menu_select != 22 && menu_select != 32 && menu_select != 42 && menu_select != 52){
+                menu_select += 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+
+        }
+    }
+///////////////////////////////////////////////////////////////////////////////
+
+
+Key Press Event for W-key Key:
+execute code:
+
+
+//menu_select     = 0; // Cursor selection # DEFAULT = 0, 1 = controls, 2 = gunsawiki, 3 = retire, -1 = horde 
+//If currently on ENFORCE selection
+//If User is on main menu
+if (menu_display == 0)
+{
+//If horde mode is locked, then it'll move downwards to GUNSAWIKI
+if (global.horde_unlocked == false)
+{
+if (menu_select == 0)
+    {
+        menu_select = 2;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}///////
+//If horde mode is unlocked, then it'll move upwards to HORDE from ENFORCE
+if (global.horde_unlocked == true)
+{
+if (menu_select == 0)
+    {
+        menu_select = -1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}////////
+
+//If horde mode is unlocked, then it'll move upwards to CONTROLS from ENFORCE
+if (global.horde_unlocked == true)
+{
+if (menu_select == 1)
+    {
+        menu_select = -1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+}////////
+
+//IF currently on Horde mode
+
+//If currently on GUNSAWIKI selection
+if (menu_select == 2)
+    {
+        menu_select = 0;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on CONTROLS selection
+if (menu_select == 1)
+    {
+        menu_select = 3;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+        exit;
+    }
+//If currently on RETIRE selection
+if (menu_select == 3)
+    {
+        menu_select = 1;
+        menu_sfx_choose = (irandom_range(1,3));
+        if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+        if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+        if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+        exit;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////
+//If user is on enforce screen
+if(menu_display == 1)
+    {
+// Cursor selection @ Enforce Menu, Default = 0 = p1, 1 = p2, 2 = p3, 3 = p4, 4 = load game of X players,
+// 5 = enforce, 6 = go back!
+    
+    //If on any of the p1-p4 options
+    if (menu_select < 4)
+        {
+            menu_select = 6;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+    //If on Back option
+    if (menu_select == 6)
+        {
+            menu_select = 5;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+    //If on ENFORCE option
+    if (menu_select == 5)
+        {
+            menu_select = 4;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+    //If on Load option
+    if (menu_select == 4)
+        {
+            //Since there's 4 options to move 'up', it'll decide based on # of current players
+            if (menu_player_count == 1){menu_select =0;}
+            if (menu_player_count == 2){menu_select =1;}
+            if (menu_player_count == 3){menu_select =2;}
+            if (menu_player_count == 4){menu_select =3;}
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}  
+            exit;
+        }
+        
+    }
+///////////////////////////////////////////////////////////////////////////////
+// Cursor selection @ Controls Menu, Default = 0 Keyboard, 1 = back, 2 = P3 keys, 3 = P4 keys, 4 = P1 keys, 5 = p2 keys
+//If User is on Controls Menu
+if(menu_display == 2)
+    {
+        //If on keyboard -> P3 keys
+        if(menu_select == 0)
+            {
+                menu_select = 2;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p3 keys -> p1 keys
+        if(menu_select == 2)
+            {
+                menu_select = 4;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p1 keys -> keyboard
+        if(menu_select == 4)
+            {
+                menu_select = 0;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on back -> p4 keys
+        if(menu_select == 1)
+            {
+                menu_select = 3;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p4 keys -> p2 keys
+        if(menu_select == 3)
+            {
+                menu_select = 5;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+        //If on p2 keys -> back keys
+        if(menu_select == 5)
+            {
+                menu_select = 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}       
+                exit;
+            }
+    }
+///////////////////////////////////////////////////////////////////////////////
+//If user is on Gunsawiki Menu
+if(menu_display == 3)
+    {
+        if(menu_select == 3){
+            menu_select = 0;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select == 4){
+            menu_select = 1;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select == 5){
+            menu_select = 2;
+            menu_sfx_choose = (irandom_range(1,3));
+            if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+            if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+            if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+            exit;
+        }
+        else if(menu_select >= 11 && menu_select <= 99){
+            if(menu_select != 11 && menu_select != 21 && menu_select != 31 && menu_select != 41 && menu_select != 51){
+                menu_select -= 1;
+                menu_sfx_choose = (irandom_range(1,3));
+                if (menu_sfx_choose == 1){sound_play(menu_scroll_sfx_1);}
+                if (menu_sfx_choose == 2){sound_play(menu_scroll_sfx_2);}
+                if (menu_sfx_choose == 3){sound_play(menu_scroll_sfx_3);}
+                exit;
+            }
+
+        }
+    }
+///////////////////////////////////////////////////////////////////////////////
+
+
+Key Press Event for F1 Key:
+execute code:
+
+///To change screen size to X1 in pixels
+window_set_size(300,300);
+
+
+Key Press Event for F2 Key:
+execute code:
+
+///To change screen size to X2
+window_set_size(600,600);
+
+
+Key Press Event for F3 Key:
+execute code:
+
+///To change screen size to X3
+window_set_size(900,900);
+

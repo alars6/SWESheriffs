@@ -1,0 +1,23 @@
+Information about object: e_spawn_window_obj
+
+Sprite: enforcer_window_enemy_spawner_sprite
+Solid: false
+Visible: false
+Depth: -1
+Persistent: false
+Parent: <no parent>
+Mask: <same as sprite>
+
+Create Event:
+execute code:
+
+alarm[0] = 3600;
+
+
+Alarm Event for alarm 0:
+execute code:
+
+
+alarm[0]=3600;
+instance_create(x+0,y+0,outlaw_body_obj);
+

@@ -1,0 +1,45 @@
+/////////////////////////////////////////////////////////////////
+// THIS WILL CHECK IF THERE'S ENOUGH AMMO TO RELOAD WITH FOR X WEAPON
+which_weap_side = argument0;    //Which weapon is it, left(2) or rite(1)?
+pass_to         = argument1;    //To which player's arm to pass to?
+which_weap_num  = argument2;    //Which weapon is it? 1-5 FOR NOW   
+//enforcer_p1_reload_check_script(1,id)
+/////////////////////////////////////////////////////////////////
+
+if (which_weap_side == 1)
+    {
+        if (which_weap_num == 1)    //Rust revolver & ammo check. Is there >=1 revolver ammo?
+            {
+                if (global.enforcer_p1_ammo_1 > 0) && (global.enforcer_p1_ammo_1 > pass_to.enforcer_p1_weapon_1_clip)
+                    {pass_to.enforcer_p1_weapon_1_reload_check = true;exit;}
+            }
+        if (which_weap_num == 2)    //Rusty pistol ammo check. Is there >=1 pistol ammo?
+            {   //Full clip = 5 bullets
+                if (global.enforcer_p1_ammo_2 > 0) && (global.enforcer_p1_ammo_2 > pass_to.enforcer_p1_weapon_1_clip)
+                    {pass_to.enforcer_p1_weapon_1_reload_check = true;exit;}
+            }
+        if (which_weap_num == 3)    //Rusty repeater ammo check. Is there >=1 repeater ammo?
+            {
+                if (global.enforcer_p1_ammo_3 > 0) && (global.enforcer_p1_ammo_3 > pass_to.enforcer_p1_weapon_1_clip)
+                    {pass_to.enforcer_p1_weapon_1_reload_check = true;exit;}
+            }
+        if (which_weap_num == 4)    //Rusty rifle ammo check. Is there >=1 rifle ammo?
+            {
+                if (global.enforcer_p1_ammo_4 > 0) && (global.enforcer_p1_ammo_4 > pass_to.enforcer_p1_weapon_1_clip)
+                    {pass_to.enforcer_p1_weapon_1_reload_check = true;exit;}
+            }
+        if (which_weap_num == 5)    //Rusty shotgun ammo check. Is there >=1 rifle ammo?
+            {
+                if (global.enforcer_p1_ammo_5 > 0) && (global.enforcer_p1_ammo_5 > pass_to.enforcer_p1_weapon_1_clip)
+                    {pass_to.enforcer_p1_weapon_1_reload_check = true;exit;}
+            }
+    }
+////////////////////////END RITE SIDE WEAPON CHECK////////////////////////////////
+//////////////////////////////////////////////////////////////////
+if (which_weap_side == 2)
+    {
+    
+    }
+/////////////////////////END LEFT SIDE WEAPON CHECK/////////////////////////
+//////////////////////////////////////////////////////////////////
+
