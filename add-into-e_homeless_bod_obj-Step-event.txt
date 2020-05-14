@@ -1,0 +1,9 @@
+Add the following into the e_homeless_bod_obj Step event
+Put it in the If statement that checks if the enemy is dead [if (e_hp < 1) && (e_dead == false)]
+
+//Heal the player a bit upon death
+        if (global.enforcer_p1_hp < 100)
+           {global.enforcer_p1_hp += 10; global.enforcer_p1_hurt_hp = global.enforcer_p1_hp;}
+        //Make sure player's health isn't above 100
+         if (global.enforcer_p1_hp > 99)
+            {global.enforcer_p1_hp = 100; global.enforcer_p1_hurt_hp = global.enforcer_p1_hp;}
