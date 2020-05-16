@@ -1,4 +1,5 @@
-        //If choosing GUNSAWIKI
+// written by:Jeremy
+//If choosing GUNSAWIKI
         if(menu_select == 2)
             {
                 instance_create(0,0,menu_black_screen_obj);
