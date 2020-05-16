@@ -1,3 +1,4 @@
+//Written by Amanda
 **New objects:
 
 health_pickup
