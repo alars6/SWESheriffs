@@ -23,14 +23,20 @@ The Last Sheriffs Readme
 **What you need to run the program:**
 *Windows OS: 7 or higher  
 *A Compiled Copy of the Program: (Standalone) https://drive.google.com/drive/folders/1NEON4p3LGxZHO4T7uDi4x6SqSDe-n3Ps?usp=sharing
+
 *Or a UnCompiled Copy of the Program:https://drive.google.com/drive/folders/1Evbug24BwhS3DJAHkZoFyxRnN2a6aQEE?usp=sharing
+
 *If using uncompiled copy, one must use GMK 8 Pro to compile the program.
+
 *NOTE: Currently untested w/ Linux & Mac OS’s. If using Mac, you may need to resort to using
+
 *Music folder needs to be next to the .exe files for the project to use the audio files. However, if the music folder isn’t next to the .exe file, then the project can still run as is but w/out any music playing in the backgroun. 
 
 **How to run the program:**
 *If running Compiled copy, double click on the executable file.
+
 *If running uncompiled copy, load up the project .gmk file with GMK 8 pro and click on either Green [Play] arrow or Red [Debug] arrow on the top left  of the GUI.
+
 *
     **Showcase Video**
     *https://drive.google.com/open?id=1fy4TlcOMenh1CA0M-2pSbd1HtSlmX4Ow
