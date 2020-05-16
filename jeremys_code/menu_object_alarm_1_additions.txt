@@ -1,3 +1,4 @@
+// written by:Jeremy
 ///////////////////////////    
 //So from main menu to wiki
 if(menu_display == 0)
