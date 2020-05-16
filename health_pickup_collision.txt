@@ -1,3 +1,4 @@
+//Written by Amanda
 //Collision event with either enforcer_p1_body or enforcer_p1_arm 
 //Identical for both events
 if (global.enforcer_p1_hp < 100) //Check if enforcer's hp is below max
