@@ -1,3 +1,4 @@
+//Written by Amanda
 Add the following into the e_homeless_bod_obj Step event
 Put it in the If statement that checks if the enemy is dead [if (e_hp < 1) && (e_dead == false)]
 
