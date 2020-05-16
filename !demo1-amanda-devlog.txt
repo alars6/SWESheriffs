@@ -1,3 +1,4 @@
+//Written by Amanda
 Where to find the new stuff in the Game Maker environment:
 	The new items are in the "Objects" folder. 
 	Their sprites are under "Sprites/item_sprites/health_restore_sprites".
