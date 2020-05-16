@@ -1,3 +1,4 @@
+// written by:Allison Hardy
 Information about object: outlaw_spawner_obj
 
 Sprite: <no sprite>
